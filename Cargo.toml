@@ -1,0 +1,17 @@
+[package]
+name = "slint-math-input"
+version = "0.1.0-dev"
+edition = "2024"
+rust-version = "1.85"
+description = "A native mathematical expression input component for Slint, under development."
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/Ethan-decoy/slint_math_input"
+readme = "README.md"
+keywords = ["slint", "math", "latex", "editor", "input"]
+categories = ["gui", "text-editors"]
+publish = false
+include = ["src/**", "Cargo.toml", "README.md", "readme_zh.md", "CONTRIBUTING.md", "LICENSE-MIT", "LICENSE-APACHE"]
+
+[lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
