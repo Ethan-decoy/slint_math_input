@@ -1,0 +1,91 @@
+// Rust renders the formula; this surface owns native focus, IME and pointer routing.
+export struct MathView {
+    image: image,
+    content-width: float,
+    content-height: float,
+    caret-x: float,
+    caret-y: float,
+    caret-height: float,
+    font-size: float,
+    accessible-text: string,
+}
+
+export component MathInput inherits Rectangle {
+    in property <MathView> view;
+    in property <string> label: "Mathematical expression";
+    out property <bool> has-focus: native-input.has-focus;
+    callback edited(string);
+    callback command(string, bool, bool, bool) -> bool;
+    callback seek(float, float, bool);
+    callback submitted();
+    callback focus-changed(bool);
+    forward-focus: native-input;
+    private property <bool> cursor-visible: true;
+    private property <float> scroll-x: max(0, view.caret-x - (self.width / 1px - 42));
+    private property <float> scroll-y: max(0, view.caret-y + view.caret-height - (self.height / 1px - 24));
+    private property <length> image-y: max(0px, (self.height - view.content-height * 1px) / 2) - scroll-y * 1px;
+    min-width: 120px;
+    min-height: 80px;
+    preferred-height: max(100px, min(300px, view.content-height * 1px + 24px));
+    background: white;
+    border-width: 1px;
+    border-color: native-input.has-focus ? #3c83bd : #d3dce4;
+    border-radius: 3px;
+    clip: true;
+    changed view => { cursor-visible = true; }
+    Image {
+        x: 12px - root.scroll-x * 1px;
+        y: root.image-y;
+        width: root.view.content-width * 1px;
+        height: root.view.content-height * 1px;
+        source: root.view.image;
+        image-fit: contain;
+    }
+    if native-input.has-focus && root.cursor-visible: Rectangle {
+        x: 12px + (root.view.caret-x - root.scroll-x) * 1px;
+        y: root.image-y + root.view.caret-y * 1px;
+        width: 1.5px;
+        height: root.view.caret-height * 1px;
+        background: #202b36;
+    }
+    native-input := TextInput {
+        x: 12px + (root.view.caret-x - root.scroll-x) * 1px;
+        y: root.image-y + root.view.caret-y * 1px;
+        width: max(16px, root.width - self.x - 12px);
+        height: root.view.caret-height * 1px;
+        font-size: root.view.font-size * 1px;
+        font-family: "Segoe UI";
+        color: #263444;
+        text-cursor-width: 0px;
+        single-line: true;
+        accessible-label: root.label + ": " + root.view.accessible-text;
+        accessible-description: "Arrow keys navigate structures. Tab or Escape exits a structure; Tab at the top level moves to the next control.";
+        edited => {
+            if self.text != "" { root.edited(self.text); self.text = ""; }
+        }
+        changed has-focus => { root.focus-changed(self.has-focus); root.cursor-visible = true; }
+        key-pressed(event) => {
+            root.cursor-visible = true;
+            if event.text == Key.Return {
+                root.submitted();
+                return accept;
+            }
+            if root.command(event.text, event.modifiers.control || event.modifiers.meta, event.modifiers.shift, event.modifiers.alt) { return accept; }
+            return reject;
+        }
+    }
+    TouchArea {
+        mouse-cursor: text;
+        pointer-event(event) => {
+            if event.kind == PointerEventKind.down && event.button == PointerEventButton.left {
+                root.seek((self.mouse-x - 12px) / 1px + root.scroll-x, (self.mouse-y - root.image-y) / 1px, event.modifiers.shift);
+                native-input.focus();
+                root.cursor-visible = true;
+            }
+        }
+        moved => {
+            if self.pressed { root.seek((self.mouse-x - 12px) / 1px + root.scroll-x, (self.mouse-y - root.image-y) / 1px, true); }
+        }
+    }
+    Timer { interval: 500ms; running: native-input.has-focus; triggered => { root.cursor-visible = !root.cursor-visible; } }
+}

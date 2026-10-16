@@ -1,0 +1,9 @@
+[
+  {"Insert": "(x+1)/"},
+  {"Insert": "2"},
+  {"Move": ["Right", false]},
+  "SelectAll",
+  {"Template": "Root"},
+  "Undo",
+  "Redo"
+]

@@ -1,8 +1,8 @@
 [package]
 name = "slint-math-input"
-version = "0.1.0-dev"
+version = "0.1.0-preview.1"
 edition = "2024"
-rust-version = "1.85"
+rust-version = "1.92"
 description = "A native mathematical expression input component for Slint, under development."
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/Ethan-decoy/slint_math_input"
@@ -10,8 +10,26 @@ readme = "README.md"
 keywords = ["slint", "math", "latex", "editor", "input"]
 categories = ["gui", "text-editors"]
 publish = false
-include = ["src/**", "Cargo.toml", "README.md", "readme_zh.md", "CONTRIBUTING.md", "LICENSE-MIT", "LICENSE-APACHE"]
+include = ["/src/**", "/ui/**", "/assets/**", "/templates/**", "/tools/**", "/examples/demo.rs", "/examples/support/**", "/tests/**", "/docs/**", "/Cargo.toml", "/README.md", "/readme_zh.md", "/CONTRIBUTING.md", "/CHANGELOG.md", "/LICENSE-MIT", "/LICENSE-APACHE"]
+
+[features]
+default = ["desktop"]
+slint-ui = ["dep:slint", "dep:arboard"]
+desktop = ["slint-ui", "slint/backend-winit", "slint/renderer-software", "slint/accessibility"]
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", features = ["unbounded_depth"] }
+serde_stacker = "0.1.14"
+ttf-parser = "0.25"
+tiny-skia = "0.12"
+slint = { version = "=1.18.1", optional = true, default-features = false, features = ["std", "compat-1-18"] }
+arboard = { version = "3.6", optional = true, default-features = false }
+
+[[example]]
+name = "demo"
+required-features = ["desktop"]
 
 [lints.rust]
-unsafe_code = "forbid"
+unsafe_code = "deny"
 missing_docs = "warn"

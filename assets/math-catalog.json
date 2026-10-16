@@ -1,0 +1,3050 @@
+[
+  {
+    "id": "lim",
+    "category": "微积分",
+    "label": "lim",
+    "description": "lim · 下方可编辑条件",
+    "action": {
+      "Template": {
+        "Limit": "lim"
+      }
+    }
+  },
+  {
+    "id": "limsup",
+    "category": "微积分",
+    "label": "limsup",
+    "description": "limsup · 下方可编辑条件",
+    "action": {
+      "Template": {
+        "Limit": "limsup"
+      }
+    }
+  },
+  {
+    "id": "liminf",
+    "category": "微积分",
+    "label": "liminf",
+    "description": "liminf · 下方可编辑条件",
+    "action": {
+      "Template": {
+        "Limit": "liminf"
+      }
+    }
+  },
+  {
+    "id": "sup",
+    "category": "微积分",
+    "label": "sup",
+    "description": "sup · 下方可编辑条件",
+    "action": {
+      "Template": {
+        "Limit": "sup"
+      }
+    }
+  },
+  {
+    "id": "inf",
+    "category": "微积分",
+    "label": "inf",
+    "description": "inf · 下方可编辑条件",
+    "action": {
+      "Template": {
+        "Limit": "inf"
+      }
+    }
+  },
+  {
+    "id": "log-base",
+    "category": "微积分",
+    "label": "logₐ",
+    "description": "带底对数",
+    "action": {
+      "Template": "LogBase"
+    }
+  },
+  {
+    "id": "derivative",
+    "category": "微积分",
+    "label": "d/dx",
+    "description": "导数算子 · 可修改变量和阶数",
+    "action": {
+      "Template": {
+        "Derivative": {
+          "partial": false,
+          "order": 1
+        }
+      }
+    }
+  },
+  {
+    "id": "partial-derivative",
+    "category": "微积分",
+    "label": "∂/∂x",
+    "description": "导数算子 · 可修改变量和阶数",
+    "action": {
+      "Template": {
+        "Derivative": {
+          "partial": true,
+          "order": 1
+        }
+      }
+    }
+  },
+  {
+    "id": "second-derivative",
+    "category": "微积分",
+    "label": "d²/dx²",
+    "description": "导数算子 · 可修改变量和阶数",
+    "action": {
+      "Template": {
+        "Derivative": {
+          "partial": false,
+          "order": 2
+        }
+      }
+    }
+  },
+  {
+    "id": "second-partial",
+    "category": "微积分",
+    "label": "∂²/∂x²",
+    "description": "导数算子 · 可修改变量和阶数",
+    "action": {
+      "Template": {
+        "Derivative": {
+          "partial": true,
+          "order": 2
+        }
+      }
+    }
+  },
+  {
+    "id": "sum",
+    "category": "微积分",
+    "label": "Σ",
+    "description": "可编辑上下限",
+    "action": {
+      "Template": "Sum"
+    }
+  },
+  {
+    "id": "product",
+    "category": "微积分",
+    "label": "Π",
+    "description": "可编辑上下限",
+    "action": {
+      "Template": "Product"
+    }
+  },
+  {
+    "id": "integral",
+    "category": "微积分",
+    "label": "∫ₐᵇ",
+    "description": "可编辑上下限",
+    "action": {
+      "Template": "Integral"
+    }
+  },
+  {
+    "id": "indefinite-integral",
+    "category": "微积分",
+    "label": "∫",
+    "description": "大算子",
+    "action": {
+      "Template": {
+        "LargeOperator": {
+          "symbol": "∫",
+          "bounded": false
+        }
+      }
+    }
+  },
+  {
+    "id": "contour-integral",
+    "category": "微积分",
+    "label": "∮",
+    "description": "大算子",
+    "action": {
+      "Template": {
+        "LargeOperator": {
+          "symbol": "∮",
+          "bounded": true
+        }
+      }
+    }
+  },
+  {
+    "id": "double-integral",
+    "category": "微积分",
+    "label": "∬",
+    "description": "大算子",
+    "action": {
+      "Template": {
+        "LargeOperator": {
+          "symbol": "∬",
+          "bounded": true
+        }
+      }
+    }
+  },
+  {
+    "id": "triple-integral",
+    "category": "微积分",
+    "label": "∭",
+    "description": "大算子",
+    "action": {
+      "Template": {
+        "LargeOperator": {
+          "symbol": "∭",
+          "bounded": true
+        }
+      }
+    }
+  },
+  {
+    "id": "big-union",
+    "category": "微积分",
+    "label": "⋃",
+    "description": "大算子",
+    "action": {
+      "Template": {
+        "LargeOperator": {
+          "symbol": "⋃",
+          "bounded": true
+        }
+      }
+    }
+  },
+  {
+    "id": "big-intersection",
+    "category": "微积分",
+    "label": "⋂",
+    "description": "大算子",
+    "action": {
+      "Template": {
+        "LargeOperator": {
+          "symbol": "⋂",
+          "bounded": true
+        }
+      }
+    }
+  },
+  {
+    "id": "coproduct",
+    "category": "微积分",
+    "label": "∐",
+    "description": "大算子",
+    "action": {
+      "Template": {
+        "LargeOperator": {
+          "symbol": "∐",
+          "bounded": true
+        }
+      }
+    }
+  },
+  {
+    "id": "approaches",
+    "category": "微积分",
+    "label": "→",
+    "description": "→",
+    "action": {
+      "Insert": "→"
+    }
+  },
+  {
+    "id": "infinity",
+    "category": "微积分",
+    "label": "∞",
+    "description": "∞",
+    "action": {
+      "Insert": "∞"
+    }
+  },
+  {
+    "id": "partial-symbol",
+    "category": "微积分",
+    "label": "∂",
+    "description": "∂",
+    "action": {
+      "Insert": "∂"
+    }
+  },
+  {
+    "id": "nabla",
+    "category": "微积分",
+    "label": "∇",
+    "description": "∇",
+    "action": {
+      "Insert": "∇"
+    }
+  },
+  {
+    "id": "prime",
+    "category": "微积分",
+    "label": "′",
+    "description": "′",
+    "action": {
+      "Insert": "′"
+    }
+  },
+  {
+    "id": "double-prime",
+    "category": "微积分",
+    "label": "″",
+    "description": "″",
+    "action": {
+      "Insert": "″"
+    }
+  },
+  {
+    "id": "fraction",
+    "category": "基本结构",
+    "label": "a/b",
+    "description": "a/b · 可编辑结构",
+    "action": {
+      "Template": "Fraction"
+    }
+  },
+  {
+    "id": "root",
+    "category": "基本结构",
+    "label": "√",
+    "description": "√ · 可编辑结构",
+    "action": {
+      "Template": "Root"
+    }
+  },
+  {
+    "id": "indexed-root",
+    "category": "基本结构",
+    "label": "ⁿ√",
+    "description": "ⁿ√ · 可编辑结构",
+    "action": {
+      "Template": "IndexedRoot"
+    }
+  },
+  {
+    "id": "power",
+    "category": "基本结构",
+    "label": "aᵇ",
+    "description": "aᵇ · 可编辑结构",
+    "action": {
+      "Template": "Power"
+    }
+  },
+  {
+    "id": "subscript",
+    "category": "基本结构",
+    "label": "aₙ",
+    "description": "aₙ · 可编辑结构",
+    "action": {
+      "Template": "Subscript"
+    }
+  },
+  {
+    "id": "square",
+    "category": "基本结构",
+    "label": "a²",
+    "description": "a² · 可编辑结构",
+    "action": {
+      "Template": "Square"
+    }
+  },
+  {
+    "id": "binomial",
+    "category": "基本结构",
+    "label": "(n k)",
+    "description": "(n k) · 可编辑结构",
+    "action": {
+      "Template": "Binomial"
+    }
+  },
+  {
+    "id": "absolute",
+    "category": "基本结构",
+    "label": "|a|",
+    "description": "|a| · 可编辑结构",
+    "action": {
+      "Template": "Absolute"
+    }
+  },
+  {
+    "id": "norm",
+    "category": "基本结构",
+    "label": "‖a‖",
+    "description": "‖a‖ · 可编辑结构",
+    "action": {
+      "Template": "Norm"
+    }
+  },
+  {
+    "id": "floor",
+    "category": "基本结构",
+    "label": "⌊a⌋",
+    "description": "⌊a⌋ · 可编辑结构",
+    "action": {
+      "Template": "Floor"
+    }
+  },
+  {
+    "id": "ceiling",
+    "category": "基本结构",
+    "label": "⌈a⌉",
+    "description": "⌈a⌉ · 可编辑结构",
+    "action": {
+      "Template": "Ceiling"
+    }
+  },
+  {
+    "id": "angle-brackets",
+    "category": "基本结构",
+    "label": "⟨a,b⟩",
+    "description": "⟨a,b⟩ · 可编辑结构",
+    "action": {
+      "Template": "Angle"
+    }
+  },
+  {
+    "id": "parentheses",
+    "category": "基本结构",
+    "label": "(a)",
+    "description": "(a) · 可编辑结构",
+    "action": {
+      "Template": "Parentheses"
+    }
+  },
+  {
+    "id": "brackets",
+    "category": "基本结构",
+    "label": "[a]",
+    "description": "[a] · 可编辑结构",
+    "action": {
+      "Template": "Brackets"
+    }
+  },
+  {
+    "id": "braces",
+    "category": "基本结构",
+    "label": "{a}",
+    "description": "{a} · 可编辑结构",
+    "action": {
+      "Template": "Braces"
+    }
+  },
+  {
+    "id": "text",
+    "category": "基本结构",
+    "label": "文字",
+    "description": "直立文字片段",
+    "action": {
+      "Template": {
+        "Text": "text"
+      }
+    }
+  },
+  {
+    "id": "close-0",
+    "category": "基本结构",
+    "label": "闭合 )",
+    "description": "确认右定界符 )",
+    "action": {
+      "Insert": ")"
+    }
+  },
+  {
+    "id": "close-1",
+    "category": "基本结构",
+    "label": "闭合 ]",
+    "description": "确认右定界符 ]",
+    "action": {
+      "Insert": "]"
+    }
+  },
+  {
+    "id": "close-2",
+    "category": "基本结构",
+    "label": "闭合 }",
+    "description": "确认右定界符 }",
+    "action": {
+      "Insert": "}"
+    }
+  },
+  {
+    "id": "close-3",
+    "category": "基本结构",
+    "label": "闭合 |",
+    "description": "确认右定界符 |",
+    "action": {
+      "Insert": "|"
+    }
+  },
+  {
+    "id": "close-4",
+    "category": "基本结构",
+    "label": "闭合 ‖",
+    "description": "确认右定界符 ‖",
+    "action": {
+      "Insert": "‖"
+    }
+  },
+  {
+    "id": "close-5",
+    "category": "基本结构",
+    "label": "闭合 ⌋",
+    "description": "确认右定界符 ⌋",
+    "action": {
+      "Insert": "⌋"
+    }
+  },
+  {
+    "id": "close-6",
+    "category": "基本结构",
+    "label": "闭合 ⌉",
+    "description": "确认右定界符 ⌉",
+    "action": {
+      "Insert": "⌉"
+    }
+  },
+  {
+    "id": "close-7",
+    "category": "基本结构",
+    "label": "闭合 ⟩",
+    "description": "确认右定界符 ⟩",
+    "action": {
+      "Insert": "⟩"
+    }
+  },
+  {
+    "id": "fn-sin",
+    "category": "三角函数",
+    "label": "sin",
+    "description": "sin · 数学函数名称",
+    "action": {
+      "Function": "sin"
+    }
+  },
+  {
+    "id": "fn-cos",
+    "category": "三角函数",
+    "label": "cos",
+    "description": "cos · 数学函数名称",
+    "action": {
+      "Function": "cos"
+    }
+  },
+  {
+    "id": "fn-tan",
+    "category": "三角函数",
+    "label": "tan",
+    "description": "tan · 数学函数名称",
+    "action": {
+      "Function": "tan"
+    }
+  },
+  {
+    "id": "fn-sec",
+    "category": "三角函数",
+    "label": "sec",
+    "description": "sec · 数学函数名称",
+    "action": {
+      "Function": "sec"
+    }
+  },
+  {
+    "id": "fn-csc",
+    "category": "三角函数",
+    "label": "csc",
+    "description": "csc · 数学函数名称",
+    "action": {
+      "Function": "csc"
+    }
+  },
+  {
+    "id": "fn-cot",
+    "category": "三角函数",
+    "label": "cot",
+    "description": "cot · 数学函数名称",
+    "action": {
+      "Function": "cot"
+    }
+  },
+  {
+    "id": "fn-arcsin",
+    "category": "三角函数",
+    "label": "arcsin",
+    "description": "arcsin · 数学函数名称",
+    "action": {
+      "Function": "arcsin"
+    }
+  },
+  {
+    "id": "fn-arccos",
+    "category": "三角函数",
+    "label": "arccos",
+    "description": "arccos · 数学函数名称",
+    "action": {
+      "Function": "arccos"
+    }
+  },
+  {
+    "id": "fn-arctan",
+    "category": "三角函数",
+    "label": "arctan",
+    "description": "arctan · 数学函数名称",
+    "action": {
+      "Function": "arctan"
+    }
+  },
+  {
+    "id": "fn-arcsec",
+    "category": "三角函数",
+    "label": "arcsec",
+    "description": "arcsec · 数学函数名称",
+    "action": {
+      "Function": "arcsec"
+    }
+  },
+  {
+    "id": "fn-arccsc",
+    "category": "三角函数",
+    "label": "arccsc",
+    "description": "arccsc · 数学函数名称",
+    "action": {
+      "Function": "arccsc"
+    }
+  },
+  {
+    "id": "fn-arccot",
+    "category": "三角函数",
+    "label": "arccot",
+    "description": "arccot · 数学函数名称",
+    "action": {
+      "Function": "arccot"
+    }
+  },
+  {
+    "id": "fn-sinh",
+    "category": "双曲与反双曲函数",
+    "label": "sinh",
+    "description": "sinh · 数学函数名称",
+    "action": {
+      "Function": "sinh"
+    }
+  },
+  {
+    "id": "fn-cosh",
+    "category": "双曲与反双曲函数",
+    "label": "cosh",
+    "description": "cosh · 数学函数名称",
+    "action": {
+      "Function": "cosh"
+    }
+  },
+  {
+    "id": "fn-tanh",
+    "category": "双曲与反双曲函数",
+    "label": "tanh",
+    "description": "tanh · 数学函数名称",
+    "action": {
+      "Function": "tanh"
+    }
+  },
+  {
+    "id": "fn-sech",
+    "category": "双曲与反双曲函数",
+    "label": "sech",
+    "description": "sech · 数学函数名称",
+    "action": {
+      "Function": "sech"
+    }
+  },
+  {
+    "id": "fn-csch",
+    "category": "双曲与反双曲函数",
+    "label": "csch",
+    "description": "csch · 数学函数名称",
+    "action": {
+      "Function": "csch"
+    }
+  },
+  {
+    "id": "fn-coth",
+    "category": "双曲与反双曲函数",
+    "label": "coth",
+    "description": "coth · 数学函数名称",
+    "action": {
+      "Function": "coth"
+    }
+  },
+  {
+    "id": "fn-arcsinh",
+    "category": "双曲与反双曲函数",
+    "label": "arcsinh",
+    "description": "arcsinh · 数学函数名称",
+    "action": {
+      "Function": "arcsinh"
+    }
+  },
+  {
+    "id": "fn-arccosh",
+    "category": "双曲与反双曲函数",
+    "label": "arccosh",
+    "description": "arccosh · 数学函数名称",
+    "action": {
+      "Function": "arccosh"
+    }
+  },
+  {
+    "id": "fn-arctanh",
+    "category": "双曲与反双曲函数",
+    "label": "arctanh",
+    "description": "arctanh · 数学函数名称",
+    "action": {
+      "Function": "arctanh"
+    }
+  },
+  {
+    "id": "fn-arcsech",
+    "category": "双曲与反双曲函数",
+    "label": "arcsech",
+    "description": "arcsech · 数学函数名称",
+    "action": {
+      "Function": "arcsech"
+    }
+  },
+  {
+    "id": "fn-arccsch",
+    "category": "双曲与反双曲函数",
+    "label": "arccsch",
+    "description": "arccsch · 数学函数名称",
+    "action": {
+      "Function": "arccsch"
+    }
+  },
+  {
+    "id": "fn-arccoth",
+    "category": "双曲与反双曲函数",
+    "label": "arccoth",
+    "description": "arccoth · 数学函数名称",
+    "action": {
+      "Function": "arccoth"
+    }
+  },
+  {
+    "id": "fn-asinh",
+    "category": "双曲与反双曲函数",
+    "label": "asinh",
+    "description": "asinh · 数学函数名称",
+    "action": {
+      "Function": "asinh"
+    }
+  },
+  {
+    "id": "fn-acosh",
+    "category": "双曲与反双曲函数",
+    "label": "acosh",
+    "description": "acosh · 数学函数名称",
+    "action": {
+      "Function": "acosh"
+    }
+  },
+  {
+    "id": "fn-atanh",
+    "category": "双曲与反双曲函数",
+    "label": "atanh",
+    "description": "atanh · 数学函数名称",
+    "action": {
+      "Function": "atanh"
+    }
+  },
+  {
+    "id": "fn-asech",
+    "category": "双曲与反双曲函数",
+    "label": "asech",
+    "description": "asech · 数学函数名称",
+    "action": {
+      "Function": "asech"
+    }
+  },
+  {
+    "id": "fn-acsch",
+    "category": "双曲与反双曲函数",
+    "label": "acsch",
+    "description": "acsch · 数学函数名称",
+    "action": {
+      "Function": "acsch"
+    }
+  },
+  {
+    "id": "fn-acoth",
+    "category": "双曲与反双曲函数",
+    "label": "acoth",
+    "description": "acoth · 数学函数名称",
+    "action": {
+      "Function": "acoth"
+    }
+  },
+  {
+    "id": "fn-ln",
+    "category": "常用函数与数论",
+    "label": "ln",
+    "description": "ln · 数学函数名称",
+    "action": {
+      "Function": "ln"
+    }
+  },
+  {
+    "id": "fn-log",
+    "category": "常用函数与数论",
+    "label": "log",
+    "description": "log · 数学函数名称",
+    "action": {
+      "Function": "log"
+    }
+  },
+  {
+    "id": "fn-lg",
+    "category": "常用函数与数论",
+    "label": "lg",
+    "description": "lg · 数学函数名称",
+    "action": {
+      "Function": "lg"
+    }
+  },
+  {
+    "id": "fn-exp",
+    "category": "常用函数与数论",
+    "label": "exp",
+    "description": "exp · 数学函数名称",
+    "action": {
+      "Function": "exp"
+    }
+  },
+  {
+    "id": "fn-abs",
+    "category": "常用函数与数论",
+    "label": "abs",
+    "description": "abs · 数学函数名称",
+    "action": {
+      "Function": "abs"
+    }
+  },
+  {
+    "id": "fn-arg",
+    "category": "常用函数与数论",
+    "label": "arg",
+    "description": "arg · 数学函数名称",
+    "action": {
+      "Function": "arg"
+    }
+  },
+  {
+    "id": "fn-Re",
+    "category": "常用函数与数论",
+    "label": "Re",
+    "description": "Re · 数学函数名称",
+    "action": {
+      "Function": "Re"
+    }
+  },
+  {
+    "id": "fn-Im",
+    "category": "常用函数与数论",
+    "label": "Im",
+    "description": "Im · 数学函数名称",
+    "action": {
+      "Function": "Im"
+    }
+  },
+  {
+    "id": "fn-conj",
+    "category": "常用函数与数论",
+    "label": "conj",
+    "description": "conj · 数学函数名称",
+    "action": {
+      "Function": "conj"
+    }
+  },
+  {
+    "id": "fn-sign",
+    "category": "常用函数与数论",
+    "label": "sign",
+    "description": "sign · 数学函数名称",
+    "action": {
+      "Function": "sign"
+    }
+  },
+  {
+    "id": "fn-sgn",
+    "category": "常用函数与数论",
+    "label": "sgn",
+    "description": "sgn · 数学函数名称",
+    "action": {
+      "Function": "sgn"
+    }
+  },
+  {
+    "id": "fn-floor",
+    "category": "常用函数与数论",
+    "label": "floor",
+    "description": "floor · 数学函数名称",
+    "action": {
+      "Function": "floor"
+    }
+  },
+  {
+    "id": "fn-ceil",
+    "category": "常用函数与数论",
+    "label": "ceil",
+    "description": "ceil · 数学函数名称",
+    "action": {
+      "Function": "ceil"
+    }
+  },
+  {
+    "id": "fn-round",
+    "category": "常用函数与数论",
+    "label": "round",
+    "description": "round · 数学函数名称",
+    "action": {
+      "Function": "round"
+    }
+  },
+  {
+    "id": "fn-trunc",
+    "category": "常用函数与数论",
+    "label": "trunc",
+    "description": "trunc · 数学函数名称",
+    "action": {
+      "Function": "trunc"
+    }
+  },
+  {
+    "id": "fn-min",
+    "category": "常用函数与数论",
+    "label": "min",
+    "description": "min · 数学函数名称",
+    "action": {
+      "Function": "min"
+    }
+  },
+  {
+    "id": "fn-max",
+    "category": "常用函数与数论",
+    "label": "max",
+    "description": "max · 数学函数名称",
+    "action": {
+      "Function": "max"
+    }
+  },
+  {
+    "id": "fn-gcd",
+    "category": "常用函数与数论",
+    "label": "gcd",
+    "description": "gcd · 数学函数名称",
+    "action": {
+      "Function": "gcd"
+    }
+  },
+  {
+    "id": "fn-lcm",
+    "category": "常用函数与数论",
+    "label": "lcm",
+    "description": "lcm · 数学函数名称",
+    "action": {
+      "Function": "lcm"
+    }
+  },
+  {
+    "id": "fn-mod",
+    "category": "常用函数与数论",
+    "label": "mod",
+    "description": "mod · 数学函数名称",
+    "action": {
+      "Function": "mod"
+    }
+  },
+  {
+    "id": "fn-nPr",
+    "category": "常用函数与数论",
+    "label": "nPr",
+    "description": "nPr · 数学函数名称",
+    "action": {
+      "Function": "nPr"
+    }
+  },
+  {
+    "id": "fn-nCr",
+    "category": "常用函数与数论",
+    "label": "nCr",
+    "description": "nCr · 数学函数名称",
+    "action": {
+      "Function": "nCr"
+    }
+  },
+  {
+    "id": "fn-factorial",
+    "category": "常用函数与数论",
+    "label": "factorial",
+    "description": "factorial · 数学函数名称",
+    "action": {
+      "Function": "factorial"
+    }
+  },
+  {
+    "id": "fn-mean",
+    "category": "统计与列表",
+    "label": "mean",
+    "description": "mean · 数学函数名称",
+    "action": {
+      "Function": "mean"
+    }
+  },
+  {
+    "id": "fn-median",
+    "category": "统计与列表",
+    "label": "median",
+    "description": "median · 数学函数名称",
+    "action": {
+      "Function": "median"
+    }
+  },
+  {
+    "id": "fn-stdev",
+    "category": "统计与列表",
+    "label": "stdev",
+    "description": "stdev · 数学函数名称",
+    "action": {
+      "Function": "stdev"
+    }
+  },
+  {
+    "id": "fn-stdevp",
+    "category": "统计与列表",
+    "label": "stdevp",
+    "description": "stdevp · 数学函数名称",
+    "action": {
+      "Function": "stdevp"
+    }
+  },
+  {
+    "id": "fn-var",
+    "category": "统计与列表",
+    "label": "var",
+    "description": "var · 数学函数名称",
+    "action": {
+      "Function": "var"
+    }
+  },
+  {
+    "id": "fn-varp",
+    "category": "统计与列表",
+    "label": "varp",
+    "description": "varp · 数学函数名称",
+    "action": {
+      "Function": "varp"
+    }
+  },
+  {
+    "id": "fn-mad",
+    "category": "统计与列表",
+    "label": "mad",
+    "description": "mad · 数学函数名称",
+    "action": {
+      "Function": "mad"
+    }
+  },
+  {
+    "id": "fn-quantile",
+    "category": "统计与列表",
+    "label": "quantile",
+    "description": "quantile · 数学函数名称",
+    "action": {
+      "Function": "quantile"
+    }
+  },
+  {
+    "id": "fn-quartile",
+    "category": "统计与列表",
+    "label": "quartile",
+    "description": "quartile · 数学函数名称",
+    "action": {
+      "Function": "quartile"
+    }
+  },
+  {
+    "id": "fn-cov",
+    "category": "统计与列表",
+    "label": "cov",
+    "description": "cov · 数学函数名称",
+    "action": {
+      "Function": "cov"
+    }
+  },
+  {
+    "id": "fn-corr",
+    "category": "统计与列表",
+    "label": "corr",
+    "description": "corr · 数学函数名称",
+    "action": {
+      "Function": "corr"
+    }
+  },
+  {
+    "id": "fn-total",
+    "category": "统计与列表",
+    "label": "total",
+    "description": "total · 数学函数名称",
+    "action": {
+      "Function": "total"
+    }
+  },
+  {
+    "id": "fn-length",
+    "category": "统计与列表",
+    "label": "length",
+    "description": "length · 数学函数名称",
+    "action": {
+      "Function": "length"
+    }
+  },
+  {
+    "id": "fn-count",
+    "category": "统计与列表",
+    "label": "count",
+    "description": "count · 数学函数名称",
+    "action": {
+      "Function": "count"
+    }
+  },
+  {
+    "id": "fn-unique",
+    "category": "统计与列表",
+    "label": "unique",
+    "description": "unique · 数学函数名称",
+    "action": {
+      "Function": "unique"
+    }
+  },
+  {
+    "id": "fn-sort",
+    "category": "统计与列表",
+    "label": "sort",
+    "description": "sort · 数学函数名称",
+    "action": {
+      "Function": "sort"
+    }
+  },
+  {
+    "id": "fn-shuffle",
+    "category": "统计与列表",
+    "label": "shuffle",
+    "description": "shuffle · 数学函数名称",
+    "action": {
+      "Function": "shuffle"
+    }
+  },
+  {
+    "id": "fn-join",
+    "category": "统计与列表",
+    "label": "join",
+    "description": "join · 数学函数名称",
+    "action": {
+      "Function": "join"
+    }
+  },
+  {
+    "id": "fn-append",
+    "category": "统计与列表",
+    "label": "append",
+    "description": "append · 数学函数名称",
+    "action": {
+      "Function": "append"
+    }
+  },
+  {
+    "id": "fn-reverse",
+    "category": "统计与列表",
+    "label": "reverse",
+    "description": "reverse · 数学函数名称",
+    "action": {
+      "Function": "reverse"
+    }
+  },
+  {
+    "id": "fn-random",
+    "category": "概率与分布",
+    "label": "random",
+    "description": "random · 数学函数名称",
+    "action": {
+      "Function": "random"
+    }
+  },
+  {
+    "id": "fn-normaldist",
+    "category": "概率与分布",
+    "label": "normaldist",
+    "description": "normaldist · 数学函数名称",
+    "action": {
+      "Function": "normaldist"
+    }
+  },
+  {
+    "id": "fn-uniformdist",
+    "category": "概率与分布",
+    "label": "uniformdist",
+    "description": "uniformdist · 数学函数名称",
+    "action": {
+      "Function": "uniformdist"
+    }
+  },
+  {
+    "id": "fn-binomialdist",
+    "category": "概率与分布",
+    "label": "binomialdist",
+    "description": "binomialdist · 数学函数名称",
+    "action": {
+      "Function": "binomialdist"
+    }
+  },
+  {
+    "id": "fn-poissondist",
+    "category": "概率与分布",
+    "label": "poissondist",
+    "description": "poissondist · 数学函数名称",
+    "action": {
+      "Function": "poissondist"
+    }
+  },
+  {
+    "id": "fn-geodist",
+    "category": "概率与分布",
+    "label": "geodist",
+    "description": "geodist · 数学函数名称",
+    "action": {
+      "Function": "geodist"
+    }
+  },
+  {
+    "id": "fn-tdist",
+    "category": "概率与分布",
+    "label": "tdist",
+    "description": "tdist · 数学函数名称",
+    "action": {
+      "Function": "tdist"
+    }
+  },
+  {
+    "id": "fn-chisqdist",
+    "category": "概率与分布",
+    "label": "chisqdist",
+    "description": "chisqdist · 数学函数名称",
+    "action": {
+      "Function": "chisqdist"
+    }
+  },
+  {
+    "id": "fn-fdist",
+    "category": "概率与分布",
+    "label": "fdist",
+    "description": "fdist · 数学函数名称",
+    "action": {
+      "Function": "fdist"
+    }
+  },
+  {
+    "id": "fn-expdist",
+    "category": "概率与分布",
+    "label": "expdist",
+    "description": "expdist · 数学函数名称",
+    "action": {
+      "Function": "expdist"
+    }
+  },
+  {
+    "id": "fn-discretedist",
+    "category": "概率与分布",
+    "label": "discretedist",
+    "description": "discretedist · 数学函数名称",
+    "action": {
+      "Function": "discretedist"
+    }
+  },
+  {
+    "id": "fn-pdf",
+    "category": "概率与分布",
+    "label": "pdf",
+    "description": "pdf · 数学函数名称",
+    "action": {
+      "Function": "pdf"
+    }
+  },
+  {
+    "id": "fn-cdf",
+    "category": "概率与分布",
+    "label": "cdf",
+    "description": "cdf · 数学函数名称",
+    "action": {
+      "Function": "cdf"
+    }
+  },
+  {
+    "id": "fn-inversecdf",
+    "category": "概率与分布",
+    "label": "inversecdf",
+    "description": "inversecdf · 数学函数名称",
+    "action": {
+      "Function": "inversecdf"
+    }
+  },
+  {
+    "id": "fn-erf",
+    "category": "概率与分布",
+    "label": "erf",
+    "description": "erf · 数学函数名称",
+    "action": {
+      "Function": "erf"
+    }
+  },
+  {
+    "id": "fn-erfc",
+    "category": "概率与分布",
+    "label": "erfc",
+    "description": "erfc · 数学函数名称",
+    "action": {
+      "Function": "erfc"
+    }
+  },
+  {
+    "id": "fn-gamma",
+    "category": "概率与分布",
+    "label": "gamma",
+    "description": "gamma · 数学函数名称",
+    "action": {
+      "Function": "gamma"
+    }
+  },
+  {
+    "id": "fn-beta",
+    "category": "概率与分布",
+    "label": "beta",
+    "description": "beta · 数学函数名称",
+    "action": {
+      "Function": "beta"
+    }
+  },
+  {
+    "id": "fn-loggamma",
+    "category": "概率与分布",
+    "label": "loggamma",
+    "description": "loggamma · 数学函数名称",
+    "action": {
+      "Function": "loggamma"
+    }
+  },
+  {
+    "id": "fn-det",
+    "category": "线性代数函数",
+    "label": "det",
+    "description": "det · 数学函数名称",
+    "action": {
+      "Function": "det"
+    }
+  },
+  {
+    "id": "fn-trace",
+    "category": "线性代数函数",
+    "label": "trace",
+    "description": "trace · 数学函数名称",
+    "action": {
+      "Function": "trace"
+    }
+  },
+  {
+    "id": "fn-rank",
+    "category": "线性代数函数",
+    "label": "rank",
+    "description": "rank · 数学函数名称",
+    "action": {
+      "Function": "rank"
+    }
+  },
+  {
+    "id": "fn-rref",
+    "category": "线性代数函数",
+    "label": "rref",
+    "description": "rref · 数学函数名称",
+    "action": {
+      "Function": "rref"
+    }
+  },
+  {
+    "id": "fn-transpose",
+    "category": "线性代数函数",
+    "label": "transpose",
+    "description": "transpose · 数学函数名称",
+    "action": {
+      "Function": "transpose"
+    }
+  },
+  {
+    "id": "fn-inverse",
+    "category": "线性代数函数",
+    "label": "inverse",
+    "description": "inverse · 数学函数名称",
+    "action": {
+      "Function": "inverse"
+    }
+  },
+  {
+    "id": "fn-rows",
+    "category": "线性代数函数",
+    "label": "rows",
+    "description": "rows · 数学函数名称",
+    "action": {
+      "Function": "rows"
+    }
+  },
+  {
+    "id": "fn-columns",
+    "category": "线性代数函数",
+    "label": "columns",
+    "description": "columns · 数学函数名称",
+    "action": {
+      "Function": "columns"
+    }
+  },
+  {
+    "id": "fn-dim",
+    "category": "线性代数函数",
+    "label": "dim",
+    "description": "dim · 数学函数名称",
+    "action": {
+      "Function": "dim"
+    }
+  },
+  {
+    "id": "fn-ker",
+    "category": "线性代数函数",
+    "label": "ker",
+    "description": "ker · 数学函数名称",
+    "action": {
+      "Function": "ker"
+    }
+  },
+  {
+    "id": "fn-hom",
+    "category": "线性代数函数",
+    "label": "hom",
+    "description": "hom · 数学函数名称",
+    "action": {
+      "Function": "hom"
+    }
+  },
+  {
+    "id": "factorial-symbol",
+    "category": "常用函数与数论",
+    "label": "n!",
+    "description": "阶乘",
+    "action": {
+      "Insert": "!"
+    }
+  },
+  {
+    "id": "matrix-2",
+    "category": "矩阵与分段",
+    "label": "[2×2]",
+    "description": "矩阵或分段表达式 · 各单元格可编辑",
+    "action": {
+      "Template": {
+        "StyledMatrix": {
+          "rows": 2,
+          "columns": 2,
+          "style": "Brackets"
+        }
+      }
+    }
+  },
+  {
+    "id": "matrix-3",
+    "category": "矩阵与分段",
+    "label": "[3×3]",
+    "description": "矩阵或分段表达式 · 各单元格可编辑",
+    "action": {
+      "Template": {
+        "StyledMatrix": {
+          "rows": 3,
+          "columns": 3,
+          "style": "Brackets"
+        }
+      }
+    }
+  },
+  {
+    "id": "pmatrix",
+    "category": "矩阵与分段",
+    "label": "(2×2)",
+    "description": "矩阵或分段表达式 · 各单元格可编辑",
+    "action": {
+      "Template": {
+        "StyledMatrix": {
+          "rows": 2,
+          "columns": 2,
+          "style": "Parentheses"
+        }
+      }
+    }
+  },
+  {
+    "id": "determinant",
+    "category": "矩阵与分段",
+    "label": "|2×2|",
+    "description": "矩阵或分段表达式 · 各单元格可编辑",
+    "action": {
+      "Template": {
+        "StyledMatrix": {
+          "rows": 2,
+          "columns": 2,
+          "style": "Bars"
+        }
+      }
+    }
+  },
+  {
+    "id": "norm-matrix",
+    "category": "矩阵与分段",
+    "label": "‖2×2‖",
+    "description": "矩阵或分段表达式 · 各单元格可编辑",
+    "action": {
+      "Template": {
+        "StyledMatrix": {
+          "rows": 2,
+          "columns": 2,
+          "style": "DoubleBars"
+        }
+      }
+    }
+  },
+  {
+    "id": "plain-matrix",
+    "category": "矩阵与分段",
+    "label": "矩阵",
+    "description": "矩阵或分段表达式 · 各单元格可编辑",
+    "action": {
+      "Template": {
+        "StyledMatrix": {
+          "rows": 2,
+          "columns": 2,
+          "style": "Plain"
+        }
+      }
+    }
+  },
+  {
+    "id": "column-vector",
+    "category": "矩阵与分段",
+    "label": "列向量",
+    "description": "矩阵或分段表达式 · 各单元格可编辑",
+    "action": {
+      "Template": {
+        "StyledMatrix": {
+          "rows": 3,
+          "columns": 1,
+          "style": "Parentheses"
+        }
+      }
+    }
+  },
+  {
+    "id": "row-vector",
+    "category": "矩阵与分段",
+    "label": "行向量",
+    "description": "矩阵或分段表达式 · 各单元格可编辑",
+    "action": {
+      "Template": {
+        "StyledMatrix": {
+          "rows": 1,
+          "columns": 3,
+          "style": "Brackets"
+        }
+      }
+    }
+  },
+  {
+    "id": "cases-2",
+    "category": "矩阵与分段",
+    "label": "分段 2 行",
+    "description": "矩阵或分段表达式 · 各单元格可编辑",
+    "action": {
+      "Template": {
+        "StyledMatrix": {
+          "rows": 2,
+          "columns": 2,
+          "style": "Cases"
+        }
+      }
+    }
+  },
+  {
+    "id": "cases-3",
+    "category": "矩阵与分段",
+    "label": "分段 3 行",
+    "description": "矩阵或分段表达式 · 各单元格可编辑",
+    "action": {
+      "Template": {
+        "StyledMatrix": {
+          "rows": 3,
+          "columns": 2,
+          "style": "Cases"
+        }
+      }
+    }
+  },
+  {
+    "id": "aligned",
+    "category": "矩阵与分段",
+    "label": "多行对齐",
+    "description": "矩阵或分段表达式 · 各单元格可编辑",
+    "action": {
+      "Template": {
+        "StyledMatrix": {
+          "rows": 2,
+          "columns": 2,
+          "style": "Aligned"
+        }
+      }
+    }
+  },
+  {
+    "id": "matrix-row-add",
+    "category": "矩阵与分段",
+    "label": "增加行",
+    "description": "调整光标所在矩阵 · 缩小前须清空被移除单元格",
+    "action": {
+      "ResizeMatrix": {
+        "row_delta": 1,
+        "column_delta": 0
+      }
+    }
+  },
+  {
+    "id": "matrix-row-remove",
+    "category": "矩阵与分段",
+    "label": "减少行",
+    "description": "调整光标所在矩阵 · 缩小前须清空被移除单元格",
+    "action": {
+      "ResizeMatrix": {
+        "row_delta": -1,
+        "column_delta": 0
+      }
+    }
+  },
+  {
+    "id": "matrix-column-add",
+    "category": "矩阵与分段",
+    "label": "增加列",
+    "description": "调整光标所在矩阵 · 缩小前须清空被移除单元格",
+    "action": {
+      "ResizeMatrix": {
+        "row_delta": 0,
+        "column_delta": 1
+      }
+    }
+  },
+  {
+    "id": "matrix-column-remove",
+    "category": "矩阵与分段",
+    "label": "减少列",
+    "description": "调整光标所在矩阵 · 缩小前须清空被移除单元格",
+    "action": {
+      "ResizeMatrix": {
+        "row_delta": 0,
+        "column_delta": -1
+      }
+    }
+  },
+  {
+    "id": "hat",
+    "category": "重音与注记",
+    "label": "â",
+    "description": "可编辑数学重音",
+    "action": {
+      "Template": {
+        "Accent": "Hat"
+      }
+    }
+  },
+  {
+    "id": "bar",
+    "category": "重音与注记",
+    "label": "ā",
+    "description": "可编辑数学重音",
+    "action": {
+      "Template": {
+        "Accent": "Bar"
+      }
+    }
+  },
+  {
+    "id": "underline",
+    "category": "重音与注记",
+    "label": "下划线",
+    "description": "可编辑数学重音",
+    "action": {
+      "Template": {
+        "Accent": "Underline"
+      }
+    }
+  },
+  {
+    "id": "vector",
+    "category": "重音与注记",
+    "label": "向量箭头",
+    "description": "可编辑数学重音",
+    "action": {
+      "Template": {
+        "Accent": "Vector"
+      }
+    }
+  },
+  {
+    "id": "dot",
+    "category": "重音与注记",
+    "label": "ȧ",
+    "description": "可编辑数学重音",
+    "action": {
+      "Template": {
+        "Accent": "Dot"
+      }
+    }
+  },
+  {
+    "id": "double-dot",
+    "category": "重音与注记",
+    "label": "ä",
+    "description": "可编辑数学重音",
+    "action": {
+      "Template": {
+        "Accent": "DoubleDot"
+      }
+    }
+  },
+  {
+    "id": "tilde",
+    "category": "重音与注记",
+    "label": "ã",
+    "description": "可编辑数学重音",
+    "action": {
+      "Template": {
+        "Accent": "Tilde"
+      }
+    }
+  },
+  {
+    "id": "overbrace",
+    "category": "重音与注记",
+    "label": "上括注",
+    "description": "可编辑数学重音",
+    "action": {
+      "Template": {
+        "Accent": "Overbrace"
+      }
+    }
+  },
+  {
+    "id": "underbrace",
+    "category": "重音与注记",
+    "label": "下括注",
+    "description": "可编辑数学重音",
+    "action": {
+      "Template": {
+        "Accent": "Underbrace"
+      }
+    }
+  },
+  {
+    "id": "overset",
+    "category": "重音与注记",
+    "label": "上方注记",
+    "description": "基式上方的可编辑注记",
+    "action": {
+      "Template": "Overset"
+    }
+  },
+  {
+    "id": "underset",
+    "category": "重音与注记",
+    "label": "下方注记",
+    "description": "基式下方的可编辑注记",
+    "action": {
+      "Template": "Underset"
+    }
+  },
+  {
+    "id": "symbol-0",
+    "category": "希腊字母",
+    "label": "α",
+    "description": "α",
+    "action": {
+      "Insert": "α"
+    }
+  },
+  {
+    "id": "symbol-1",
+    "category": "希腊字母",
+    "label": "β",
+    "description": "β",
+    "action": {
+      "Insert": "β"
+    }
+  },
+  {
+    "id": "symbol-2",
+    "category": "希腊字母",
+    "label": "γ",
+    "description": "γ",
+    "action": {
+      "Insert": "γ"
+    }
+  },
+  {
+    "id": "symbol-3",
+    "category": "希腊字母",
+    "label": "δ",
+    "description": "δ",
+    "action": {
+      "Insert": "δ"
+    }
+  },
+  {
+    "id": "symbol-4",
+    "category": "希腊字母",
+    "label": "ε",
+    "description": "ε",
+    "action": {
+      "Insert": "ε"
+    }
+  },
+  {
+    "id": "symbol-5",
+    "category": "希腊字母",
+    "label": "ζ",
+    "description": "ζ",
+    "action": {
+      "Insert": "ζ"
+    }
+  },
+  {
+    "id": "symbol-6",
+    "category": "希腊字母",
+    "label": "η",
+    "description": "η",
+    "action": {
+      "Insert": "η"
+    }
+  },
+  {
+    "id": "symbol-7",
+    "category": "希腊字母",
+    "label": "θ",
+    "description": "θ",
+    "action": {
+      "Insert": "θ"
+    }
+  },
+  {
+    "id": "symbol-8",
+    "category": "希腊字母",
+    "label": "ι",
+    "description": "ι",
+    "action": {
+      "Insert": "ι"
+    }
+  },
+  {
+    "id": "symbol-9",
+    "category": "希腊字母",
+    "label": "κ",
+    "description": "κ",
+    "action": {
+      "Insert": "κ"
+    }
+  },
+  {
+    "id": "symbol-10",
+    "category": "希腊字母",
+    "label": "λ",
+    "description": "λ",
+    "action": {
+      "Insert": "λ"
+    }
+  },
+  {
+    "id": "symbol-11",
+    "category": "希腊字母",
+    "label": "μ",
+    "description": "μ",
+    "action": {
+      "Insert": "μ"
+    }
+  },
+  {
+    "id": "symbol-12",
+    "category": "希腊字母",
+    "label": "ν",
+    "description": "ν",
+    "action": {
+      "Insert": "ν"
+    }
+  },
+  {
+    "id": "symbol-13",
+    "category": "希腊字母",
+    "label": "ξ",
+    "description": "ξ",
+    "action": {
+      "Insert": "ξ"
+    }
+  },
+  {
+    "id": "symbol-14",
+    "category": "希腊字母",
+    "label": "ο",
+    "description": "ο",
+    "action": {
+      "Insert": "ο"
+    }
+  },
+  {
+    "id": "symbol-15",
+    "category": "希腊字母",
+    "label": "π",
+    "description": "π",
+    "action": {
+      "Insert": "π"
+    }
+  },
+  {
+    "id": "symbol-16",
+    "category": "希腊字母",
+    "label": "ρ",
+    "description": "ρ",
+    "action": {
+      "Insert": "ρ"
+    }
+  },
+  {
+    "id": "symbol-17",
+    "category": "希腊字母",
+    "label": "σ",
+    "description": "σ",
+    "action": {
+      "Insert": "σ"
+    }
+  },
+  {
+    "id": "symbol-18",
+    "category": "希腊字母",
+    "label": "τ",
+    "description": "τ",
+    "action": {
+      "Insert": "τ"
+    }
+  },
+  {
+    "id": "symbol-19",
+    "category": "希腊字母",
+    "label": "υ",
+    "description": "υ",
+    "action": {
+      "Insert": "υ"
+    }
+  },
+  {
+    "id": "symbol-20",
+    "category": "希腊字母",
+    "label": "φ",
+    "description": "φ",
+    "action": {
+      "Insert": "φ"
+    }
+  },
+  {
+    "id": "symbol-21",
+    "category": "希腊字母",
+    "label": "χ",
+    "description": "χ",
+    "action": {
+      "Insert": "χ"
+    }
+  },
+  {
+    "id": "symbol-22",
+    "category": "希腊字母",
+    "label": "ψ",
+    "description": "ψ",
+    "action": {
+      "Insert": "ψ"
+    }
+  },
+  {
+    "id": "symbol-23",
+    "category": "希腊字母",
+    "label": "ω",
+    "description": "ω",
+    "action": {
+      "Insert": "ω"
+    }
+  },
+  {
+    "id": "symbol-24",
+    "category": "希腊字母",
+    "label": "ϵ",
+    "description": "ϵ",
+    "action": {
+      "Insert": "ϵ"
+    }
+  },
+  {
+    "id": "symbol-25",
+    "category": "希腊字母",
+    "label": "ϑ",
+    "description": "ϑ",
+    "action": {
+      "Insert": "ϑ"
+    }
+  },
+  {
+    "id": "symbol-26",
+    "category": "希腊字母",
+    "label": "ϰ",
+    "description": "ϰ",
+    "action": {
+      "Insert": "ϰ"
+    }
+  },
+  {
+    "id": "symbol-27",
+    "category": "希腊字母",
+    "label": "ϖ",
+    "description": "ϖ",
+    "action": {
+      "Insert": "ϖ"
+    }
+  },
+  {
+    "id": "symbol-28",
+    "category": "希腊字母",
+    "label": "ϱ",
+    "description": "ϱ",
+    "action": {
+      "Insert": "ϱ"
+    }
+  },
+  {
+    "id": "symbol-29",
+    "category": "希腊字母",
+    "label": "ς",
+    "description": "ς",
+    "action": {
+      "Insert": "ς"
+    }
+  },
+  {
+    "id": "symbol-30",
+    "category": "希腊字母",
+    "label": "ϕ",
+    "description": "ϕ",
+    "action": {
+      "Insert": "ϕ"
+    }
+  },
+  {
+    "id": "symbol-31",
+    "category": "希腊字母",
+    "label": "Γ",
+    "description": "Γ",
+    "action": {
+      "Insert": "Γ"
+    }
+  },
+  {
+    "id": "symbol-32",
+    "category": "希腊字母",
+    "label": "Δ",
+    "description": "Δ",
+    "action": {
+      "Insert": "Δ"
+    }
+  },
+  {
+    "id": "symbol-33",
+    "category": "希腊字母",
+    "label": "Θ",
+    "description": "Θ",
+    "action": {
+      "Insert": "Θ"
+    }
+  },
+  {
+    "id": "symbol-34",
+    "category": "希腊字母",
+    "label": "Λ",
+    "description": "Λ",
+    "action": {
+      "Insert": "Λ"
+    }
+  },
+  {
+    "id": "symbol-35",
+    "category": "希腊字母",
+    "label": "Ξ",
+    "description": "Ξ",
+    "action": {
+      "Insert": "Ξ"
+    }
+  },
+  {
+    "id": "symbol-36",
+    "category": "希腊字母",
+    "label": "Π",
+    "description": "Π",
+    "action": {
+      "Insert": "Π"
+    }
+  },
+  {
+    "id": "symbol-37",
+    "category": "希腊字母",
+    "label": "Σ",
+    "description": "Σ",
+    "action": {
+      "Insert": "Σ"
+    }
+  },
+  {
+    "id": "symbol-38",
+    "category": "希腊字母",
+    "label": "Υ",
+    "description": "Υ",
+    "action": {
+      "Insert": "Υ"
+    }
+  },
+  {
+    "id": "symbol-39",
+    "category": "希腊字母",
+    "label": "Φ",
+    "description": "Φ",
+    "action": {
+      "Insert": "Φ"
+    }
+  },
+  {
+    "id": "symbol-40",
+    "category": "希腊字母",
+    "label": "Ψ",
+    "description": "Ψ",
+    "action": {
+      "Insert": "Ψ"
+    }
+  },
+  {
+    "id": "symbol-41",
+    "category": "希腊字母",
+    "label": "Ω",
+    "description": "Ω",
+    "action": {
+      "Insert": "Ω"
+    }
+  },
+  {
+    "id": "symbol-42",
+    "category": "关系与集合",
+    "label": "=",
+    "description": "=",
+    "action": {
+      "Insert": "="
+    }
+  },
+  {
+    "id": "symbol-43",
+    "category": "关系与集合",
+    "label": "≠",
+    "description": "≠",
+    "action": {
+      "Insert": "≠"
+    }
+  },
+  {
+    "id": "symbol-44",
+    "category": "关系与集合",
+    "label": "<",
+    "description": "<",
+    "action": {
+      "Insert": "<"
+    }
+  },
+  {
+    "id": "symbol-45",
+    "category": "关系与集合",
+    "label": ">",
+    "description": ">",
+    "action": {
+      "Insert": ">"
+    }
+  },
+  {
+    "id": "symbol-46",
+    "category": "关系与集合",
+    "label": "≤",
+    "description": "≤",
+    "action": {
+      "Insert": "≤"
+    }
+  },
+  {
+    "id": "symbol-47",
+    "category": "关系与集合",
+    "label": "≥",
+    "description": "≥",
+    "action": {
+      "Insert": "≥"
+    }
+  },
+  {
+    "id": "symbol-48",
+    "category": "关系与集合",
+    "label": "≈",
+    "description": "≈",
+    "action": {
+      "Insert": "≈"
+    }
+  },
+  {
+    "id": "symbol-49",
+    "category": "关系与集合",
+    "label": "≃",
+    "description": "≃",
+    "action": {
+      "Insert": "≃"
+    }
+  },
+  {
+    "id": "symbol-50",
+    "category": "关系与集合",
+    "label": "≅",
+    "description": "≅",
+    "action": {
+      "Insert": "≅"
+    }
+  },
+  {
+    "id": "symbol-51",
+    "category": "关系与集合",
+    "label": "≡",
+    "description": "≡",
+    "action": {
+      "Insert": "≡"
+    }
+  },
+  {
+    "id": "symbol-52",
+    "category": "关系与集合",
+    "label": "∝",
+    "description": "∝",
+    "action": {
+      "Insert": "∝"
+    }
+  },
+  {
+    "id": "symbol-53",
+    "category": "关系与集合",
+    "label": "≪",
+    "description": "≪",
+    "action": {
+      "Insert": "≪"
+    }
+  },
+  {
+    "id": "symbol-54",
+    "category": "关系与集合",
+    "label": "≫",
+    "description": "≫",
+    "action": {
+      "Insert": "≫"
+    }
+  },
+  {
+    "id": "symbol-55",
+    "category": "关系与集合",
+    "label": "∼",
+    "description": "∼",
+    "action": {
+      "Insert": "∼"
+    }
+  },
+  {
+    "id": "symbol-56",
+    "category": "关系与集合",
+    "label": "∈",
+    "description": "∈",
+    "action": {
+      "Insert": "∈"
+    }
+  },
+  {
+    "id": "symbol-57",
+    "category": "关系与集合",
+    "label": "∉",
+    "description": "∉",
+    "action": {
+      "Insert": "∉"
+    }
+  },
+  {
+    "id": "symbol-58",
+    "category": "关系与集合",
+    "label": "∋",
+    "description": "∋",
+    "action": {
+      "Insert": "∋"
+    }
+  },
+  {
+    "id": "symbol-59",
+    "category": "关系与集合",
+    "label": "⊂",
+    "description": "⊂",
+    "action": {
+      "Insert": "⊂"
+    }
+  },
+  {
+    "id": "symbol-60",
+    "category": "关系与集合",
+    "label": "⊃",
+    "description": "⊃",
+    "action": {
+      "Insert": "⊃"
+    }
+  },
+  {
+    "id": "symbol-61",
+    "category": "关系与集合",
+    "label": "⊆",
+    "description": "⊆",
+    "action": {
+      "Insert": "⊆"
+    }
+  },
+  {
+    "id": "symbol-62",
+    "category": "关系与集合",
+    "label": "⊇",
+    "description": "⊇",
+    "action": {
+      "Insert": "⊇"
+    }
+  },
+  {
+    "id": "symbol-63",
+    "category": "关系与集合",
+    "label": "⊊",
+    "description": "⊊",
+    "action": {
+      "Insert": "⊊"
+    }
+  },
+  {
+    "id": "symbol-64",
+    "category": "关系与集合",
+    "label": "⊋",
+    "description": "⊋",
+    "action": {
+      "Insert": "⊋"
+    }
+  },
+  {
+    "id": "symbol-65",
+    "category": "关系与集合",
+    "label": "∪",
+    "description": "∪",
+    "action": {
+      "Insert": "∪"
+    }
+  },
+  {
+    "id": "symbol-66",
+    "category": "关系与集合",
+    "label": "∩",
+    "description": "∩",
+    "action": {
+      "Insert": "∩"
+    }
+  },
+  {
+    "id": "symbol-67",
+    "category": "关系与集合",
+    "label": "∖",
+    "description": "∖",
+    "action": {
+      "Insert": "∖"
+    }
+  },
+  {
+    "id": "symbol-68",
+    "category": "关系与集合",
+    "label": "∅",
+    "description": "∅",
+    "action": {
+      "Insert": "∅"
+    }
+  },
+  {
+    "id": "symbol-69",
+    "category": "关系与集合",
+    "label": "∀",
+    "description": "∀",
+    "action": {
+      "Insert": "∀"
+    }
+  },
+  {
+    "id": "symbol-70",
+    "category": "关系与集合",
+    "label": "∃",
+    "description": "∃",
+    "action": {
+      "Insert": "∃"
+    }
+  },
+  {
+    "id": "symbol-71",
+    "category": "关系与集合",
+    "label": "∄",
+    "description": "∄",
+    "action": {
+      "Insert": "∄"
+    }
+  },
+  {
+    "id": "symbol-72",
+    "category": "关系与集合",
+    "label": "∧",
+    "description": "∧",
+    "action": {
+      "Insert": "∧"
+    }
+  },
+  {
+    "id": "symbol-73",
+    "category": "关系与集合",
+    "label": "∨",
+    "description": "∨",
+    "action": {
+      "Insert": "∨"
+    }
+  },
+  {
+    "id": "symbol-74",
+    "category": "关系与集合",
+    "label": "¬",
+    "description": "¬",
+    "action": {
+      "Insert": "¬"
+    }
+  },
+  {
+    "id": "symbol-75",
+    "category": "关系与集合",
+    "label": "⊕",
+    "description": "⊕",
+    "action": {
+      "Insert": "⊕"
+    }
+  },
+  {
+    "id": "symbol-76",
+    "category": "关系与集合",
+    "label": "⊗",
+    "description": "⊗",
+    "action": {
+      "Insert": "⊗"
+    }
+  },
+  {
+    "id": "symbol-77",
+    "category": "关系与集合",
+    "label": "⊙",
+    "description": "⊙",
+    "action": {
+      "Insert": "⊙"
+    }
+  },
+  {
+    "id": "symbol-78",
+    "category": "关系与集合",
+    "label": "⊥",
+    "description": "⊥",
+    "action": {
+      "Insert": "⊥"
+    }
+  },
+  {
+    "id": "symbol-79",
+    "category": "关系与集合",
+    "label": "∥",
+    "description": "∥",
+    "action": {
+      "Insert": "∥"
+    }
+  },
+  {
+    "id": "symbol-80",
+    "category": "关系与集合",
+    "label": "∠",
+    "description": "∠",
+    "action": {
+      "Insert": "∠"
+    }
+  },
+  {
+    "id": "symbol-81",
+    "category": "箭头与运算",
+    "label": "→",
+    "description": "→",
+    "action": {
+      "Insert": "→"
+    }
+  },
+  {
+    "id": "symbol-82",
+    "category": "箭头与运算",
+    "label": "←",
+    "description": "←",
+    "action": {
+      "Insert": "←"
+    }
+  },
+  {
+    "id": "symbol-83",
+    "category": "箭头与运算",
+    "label": "↔",
+    "description": "↔",
+    "action": {
+      "Insert": "↔"
+    }
+  },
+  {
+    "id": "symbol-84",
+    "category": "箭头与运算",
+    "label": "⇒",
+    "description": "⇒",
+    "action": {
+      "Insert": "⇒"
+    }
+  },
+  {
+    "id": "symbol-85",
+    "category": "箭头与运算",
+    "label": "⇐",
+    "description": "⇐",
+    "action": {
+      "Insert": "⇐"
+    }
+  },
+  {
+    "id": "symbol-86",
+    "category": "箭头与运算",
+    "label": "⇔",
+    "description": "⇔",
+    "action": {
+      "Insert": "⇔"
+    }
+  },
+  {
+    "id": "symbol-87",
+    "category": "箭头与运算",
+    "label": "↦",
+    "description": "↦",
+    "action": {
+      "Insert": "↦"
+    }
+  },
+  {
+    "id": "symbol-88",
+    "category": "箭头与运算",
+    "label": "↑",
+    "description": "↑",
+    "action": {
+      "Insert": "↑"
+    }
+  },
+  {
+    "id": "symbol-89",
+    "category": "箭头与运算",
+    "label": "↓",
+    "description": "↓",
+    "action": {
+      "Insert": "↓"
+    }
+  },
+  {
+    "id": "symbol-90",
+    "category": "箭头与运算",
+    "label": "↗",
+    "description": "↗",
+    "action": {
+      "Insert": "↗"
+    }
+  },
+  {
+    "id": "symbol-91",
+    "category": "箭头与运算",
+    "label": "↘",
+    "description": "↘",
+    "action": {
+      "Insert": "↘"
+    }
+  },
+  {
+    "id": "symbol-92",
+    "category": "箭头与运算",
+    "label": "±",
+    "description": "±",
+    "action": {
+      "Insert": "±"
+    }
+  },
+  {
+    "id": "symbol-93",
+    "category": "箭头与运算",
+    "label": "∓",
+    "description": "∓",
+    "action": {
+      "Insert": "∓"
+    }
+  },
+  {
+    "id": "symbol-94",
+    "category": "箭头与运算",
+    "label": "×",
+    "description": "×",
+    "action": {
+      "Insert": "×"
+    }
+  },
+  {
+    "id": "symbol-95",
+    "category": "箭头与运算",
+    "label": "·",
+    "description": "·",
+    "action": {
+      "Insert": "·"
+    }
+  },
+  {
+    "id": "symbol-96",
+    "category": "箭头与运算",
+    "label": "÷",
+    "description": "÷",
+    "action": {
+      "Insert": "÷"
+    }
+  },
+  {
+    "id": "symbol-97",
+    "category": "箭头与运算",
+    "label": "∘",
+    "description": "∘",
+    "action": {
+      "Insert": "∘"
+    }
+  },
+  {
+    "id": "symbol-98",
+    "category": "箭头与运算",
+    "label": "∗",
+    "description": "∗",
+    "action": {
+      "Insert": "∗"
+    }
+  },
+  {
+    "id": "symbol-99",
+    "category": "箭头与运算",
+    "label": "⋆",
+    "description": "⋆",
+    "action": {
+      "Insert": "⋆"
+    }
+  },
+  {
+    "id": "symbol-100",
+    "category": "箭头与运算",
+    "label": "•",
+    "description": "•",
+    "action": {
+      "Insert": "•"
+    }
+  },
+  {
+    "id": "symbol-101",
+    "category": "箭头与运算",
+    "label": "⊎",
+    "description": "⊎",
+    "action": {
+      "Insert": "⊎"
+    }
+  },
+  {
+    "id": "symbol-102",
+    "category": "箭头与运算",
+    "label": "∴",
+    "description": "∴",
+    "action": {
+      "Insert": "∴"
+    }
+  },
+  {
+    "id": "symbol-103",
+    "category": "箭头与运算",
+    "label": "∵",
+    "description": "∵",
+    "action": {
+      "Insert": "∵"
+    }
+  },
+  {
+    "id": "symbol-104",
+    "category": "箭头与运算",
+    "label": "≔",
+    "description": "≔",
+    "action": {
+      "Insert": "≔"
+    }
+  },
+  {
+    "id": "symbol-105",
+    "category": "箭头与运算",
+    "label": "…",
+    "description": "…",
+    "action": {
+      "Insert": "…"
+    }
+  },
+  {
+    "id": "symbol-106",
+    "category": "箭头与运算",
+    "label": "⋯",
+    "description": "⋯",
+    "action": {
+      "Insert": "⋯"
+    }
+  },
+  {
+    "id": "symbol-107",
+    "category": "箭头与运算",
+    "label": "⋮",
+    "description": "⋮",
+    "action": {
+      "Insert": "⋮"
+    }
+  },
+  {
+    "id": "symbol-108",
+    "category": "箭头与运算",
+    "label": "⋱",
+    "description": "⋱",
+    "action": {
+      "Insert": "⋱"
+    }
+  },
+  {
+    "id": "symbol-109",
+    "category": "箭头与运算",
+    "label": "!",
+    "description": "!",
+    "action": {
+      "Insert": "!"
+    }
+  },
+  {
+    "id": "symbol-110",
+    "category": "箭头与运算",
+    "label": "%",
+    "description": "%",
+    "action": {
+      "Insert": "%"
+    }
+  },
+  {
+    "id": "symbol-111",
+    "category": "箭头与运算",
+    "label": "′",
+    "description": "′",
+    "action": {
+      "Insert": "′"
+    }
+  },
+  {
+    "id": "symbol-112",
+    "category": "箭头与运算",
+    "label": "″",
+    "description": "″",
+    "action": {
+      "Insert": "″"
+    }
+  },
+  {
+    "id": "symbol-113",
+    "category": "常数与字母集",
+    "label": "π",
+    "description": "π",
+    "action": {
+      "Insert": "π"
+    }
+  },
+  {
+    "id": "symbol-114",
+    "category": "常数与字母集",
+    "label": "τ",
+    "description": "τ",
+    "action": {
+      "Insert": "τ"
+    }
+  },
+  {
+    "id": "symbol-115",
+    "category": "常数与字母集",
+    "label": "e",
+    "description": "e",
+    "action": {
+      "Insert": "e"
+    }
+  },
+  {
+    "id": "symbol-116",
+    "category": "常数与字母集",
+    "label": "i",
+    "description": "i",
+    "action": {
+      "Insert": "i"
+    }
+  },
+  {
+    "id": "symbol-117",
+    "category": "常数与字母集",
+    "label": "∞",
+    "description": "∞",
+    "action": {
+      "Insert": "∞"
+    }
+  },
+  {
+    "id": "symbol-118",
+    "category": "常数与字母集",
+    "label": "ℝ",
+    "description": "ℝ",
+    "action": {
+      "Insert": "ℝ"
+    }
+  },
+  {
+    "id": "symbol-119",
+    "category": "常数与字母集",
+    "label": "ℕ",
+    "description": "ℕ",
+    "action": {
+      "Insert": "ℕ"
+    }
+  },
+  {
+    "id": "symbol-120",
+    "category": "常数与字母集",
+    "label": "ℤ",
+    "description": "ℤ",
+    "action": {
+      "Insert": "ℤ"
+    }
+  },
+  {
+    "id": "symbol-121",
+    "category": "常数与字母集",
+    "label": "ℚ",
+    "description": "ℚ",
+    "action": {
+      "Insert": "ℚ"
+    }
+  },
+  {
+    "id": "symbol-122",
+    "category": "常数与字母集",
+    "label": "ℂ",
+    "description": "ℂ",
+    "action": {
+      "Insert": "ℂ"
+    }
+  },
+  {
+    "id": "symbol-123",
+    "category": "常数与字母集",
+    "label": "ℙ",
+    "description": "ℙ",
+    "action": {
+      "Insert": "ℙ"
+    }
+  },
+  {
+    "id": "symbol-124",
+    "category": "常数与字母集",
+    "label": "ℍ",
+    "description": "ℍ",
+    "action": {
+      "Insert": "ℍ"
+    }
+  },
+  {
+    "id": "symbol-125",
+    "category": "常数与字母集",
+    "label": "ℵ",
+    "description": "ℵ",
+    "action": {
+      "Insert": "ℵ"
+    }
+  },
+  {
+    "id": "symbol-126",
+    "category": "常数与字母集",
+    "label": "ℏ",
+    "description": "ℏ",
+    "action": {
+      "Insert": "ℏ"
+    }
+  },
+  {
+    "id": "symbol-127",
+    "category": "常数与字母集",
+    "label": "ℓ",
+    "description": "ℓ",
+    "action": {
+      "Insert": "ℓ"
+    }
+  },
+  {
+    "id": "symbol-128",
+    "category": "常数与字母集",
+    "label": "ℜ",
+    "description": "ℜ",
+    "action": {
+      "Insert": "ℜ"
+    }
+  },
+  {
+    "id": "symbol-129",
+    "category": "常数与字母集",
+    "label": "ℑ",
+    "description": "ℑ",
+    "action": {
+      "Insert": "ℑ"
+    }
+  },
+  {
+    "id": "symbol-130",
+    "category": "常数与字母集",
+    "label": "∅",
+    "description": "∅",
+    "action": {
+      "Insert": "∅"
+    }
+  },
+  {
+    "id": "symbol-131",
+    "category": "常数与字母集",
+    "label": "°",
+    "description": "°",
+    "action": {
+      "Insert": "°"
+    }
+  },
+  {
+    "id": "bold",
+    "category": "数学字母样式",
+    "label": "粗体",
+    "description": "粗体 · 可编辑数学字母",
+    "action": {
+      "Template": {
+        "Styled": "Bold"
+      }
+    }
+  },
+  {
+    "id": "blackboard",
+    "category": "数学字母样式",
+    "label": "黑板体",
+    "description": "黑板体 · 可编辑数学字母",
+    "action": {
+      "Template": {
+        "Styled": "DoubleStruck"
+      }
+    }
+  },
+  {
+    "id": "calligraphic",
+    "category": "数学字母样式",
+    "label": "花体",
+    "description": "花体 · 可编辑数学字母",
+    "action": {
+      "Template": {
+        "Styled": "Calligraphic"
+      }
+    }
+  },
+  {
+    "id": "fraktur",
+    "category": "数学字母样式",
+    "label": "哥特体",
+    "description": "哥特体 · 可编辑数学字母",
+    "action": {
+      "Template": {
+        "Styled": "Fraktur"
+      }
+    }
+  },
+  {
+    "id": "italic",
+    "category": "数学字母样式",
+    "label": "斜体",
+    "description": "斜体 · 可编辑数学字母",
+    "action": {
+      "Template": {
+        "Styled": "Italic"
+      }
+    }
+  },
+  {
+    "id": "sans-serif",
+    "category": "数学字母样式",
+    "label": "无衬线",
+    "description": "无衬线 · 可编辑数学字母",
+    "action": {
+      "Template": {
+        "Styled": "SansSerif"
+      }
+    }
+  },
+  {
+    "id": "monospace",
+    "category": "数学字母样式",
+    "label": "等宽",
+    "description": "等宽 · 可编辑数学字母",
+    "action": {
+      "Template": {
+        "Styled": "Monospace"
+      }
+    }
+  }
+]

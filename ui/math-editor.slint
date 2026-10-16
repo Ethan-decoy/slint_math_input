@@ -1,0 +1,41 @@
+import { MathInput, MathView } from "math-input.slint";
+import { MathKeypad } from "math-keypad.slint";
+
+// The standard formula input and keyboard, ready to embed in any host container.
+export component MathEditor inherits Rectangle {
+    in property <MathView> view;
+    in property <string> label: "Mathematical expression";
+    in-out property <int> keypad-page <=> keyboard.page;
+    in-out property <int> keypad-category <=> keyboard.category;
+    in-out property <bool> keypad-expanded <=> keyboard.expanded;
+    out property <bool> has-focus: input.has-focus;
+    callback edited(string);
+    callback command(string, bool, bool, bool) -> bool;
+    callback seek(float, float, bool);
+    callback key(string, bool);
+    callback submitted();
+    callback focus-changed(bool);
+    forward-focus: input;
+    min-width: 640px;
+    min-height: 80px + 12px + keyboard.min-height;
+    preferred-height: 160px + 12px + keyboard.preferred-height;
+    VerticalLayout {
+        padding: 0px;
+        spacing: 12px;
+        input := MathInput {
+            view: root.view;
+            label: root.label;
+            vertical-stretch: 1;
+            edited(text) => { root.edited(text); }
+            command(text, control, shift, alt) => { return root.command(text, control, shift, alt); }
+            seek(x, y, extend) => { root.seek(x, y, extend); }
+            submitted => { root.submitted(); }
+            focus-changed(active) => { root.focus-changed(active); }
+        }
+        keyboard := MathKeypad {
+            key(value, extend) => { root.key(value, extend); input.focus(); }
+            submitted => { root.submitted(); input.focus(); }
+            focus-requested => { input.focus(); }
+        }
+    }
+}
