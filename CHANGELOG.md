@@ -12,6 +12,10 @@ All notable user-facing changes are recorded here, following
 - Bug report, feature request, and integration question forms with triage rules.
 - Pull request and release templates, categorized generated notes, and release policy.
 
+### Fixed
+
+- Exclude generated Python bytecode from source packages after repository checks.
+
 ## [0.1.0-preview.1] - 2026-10-16
 
 ### Added

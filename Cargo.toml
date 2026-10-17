@@ -10,7 +10,7 @@ readme = "README.md"
 keywords = ["slint", "math", "latex", "editor", "input"]
 categories = ["gui", "text-editors"]
 publish = false
-include = ["/src/**", "/ui/**", "/assets/**", "/templates/**", "/tools/**", "/examples/demo.rs", "/examples/support/**", "/tests/**", "/docs/**", "/Cargo.toml", "/README.md", "/readme_zh.md", "/CONTRIBUTING.md", "/CHANGELOG.md", "/LICENSE-MIT", "/LICENSE-APACHE"]
+include = ["/src/**", "/ui/**", "/assets/**", "/templates/**", "/tools/*.py", "/examples/demo.rs", "/examples/support/**", "/tests/**", "/docs/**", "/Cargo.toml", "/README.md", "/readme_zh.md", "/CONTRIBUTING.md", "/CHANGELOG.md", "/LICENSE-MIT", "/LICENSE-APACHE"]
 
 [features]
 default = ["desktop"]
