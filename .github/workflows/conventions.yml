@@ -1,0 +1,30 @@
+name: Conventions
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, reopened, synchronize, edited, ready_for_review]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  commit-policy:
+    name: Commit and pull request conventions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - run: python -m unittest discover -s tools -p test_check_commits.py
+      - name: Validate shared commit history
+        if: github.event_name != 'pull_request'
+        run: python tools/check_commits.py --all
+      - name: Validate pull request title
+        if: github.event_name == 'pull_request'
+        env:
+          PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
+        run: python tools/check_commits.py --title-env PULL_REQUEST_TITLE

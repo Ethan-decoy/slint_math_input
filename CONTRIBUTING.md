@@ -3,6 +3,45 @@
 Issues and pull requests are welcome in this public repository. Explain the
 expected editing behavior and include a small reproduction for a bug report.
 
+## Commits and pull requests
+
+Use [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/):
+
+```text
+type(scope): concise summary
+
+Explain the problem and the resulting behavior when the title is not sufficient.
+
+Closes #123
+```
+
+Allowed types are `feat`, `fix`, `docs`, `refactor`, `perf`, `test`, `build`,
+`ci`, `chore`, `style`, and `revert`. Scope is optional; useful scopes include
+`editor`, `layout`, `latex`, `keypad`, `slint`, `docs`, `ci`, and `release`.
+Use lowercase types/scopes, keep the header within 72 characters, and omit a
+final period. Separate the body with a blank line; wrap prose around 72 characters
+where practical. Explain **why** and observable behavior, rather than narrating
+individual edits. Prefer English for public summaries; Chinese is welcome in
+discussion and detailed explanations. Language alone does not invalidate a commit.
+
+Use `!` or a `BREAKING CHANGE:` footer for incompatible changes and document the
+migration. Use real issue references, not placeholder numbers. Keep one cohesive
+change per commit; separate unrelated fixes or maintenance. CI-skip directives
+and unfinished `fixup!`/`squash!` messages must not enter shared project history.
+
+```sh
+python tools/check_commits.py --all
+python tools/check_commits.py --range main..HEAD
+python -m unittest discover -s tools -p test_check_commits.py
+```
+
+The checker audits non-merge history reachable from the selected branch; generated
+merge messages are exempt. PR titles use the same header format and are checked
+by the Conventions workflow. Prefer squash merging after review, using the PR title
+as the final commit header. Feature-branch work-in-progress commits may be cleaned
+up before integration. Do not rewrite another contributor's published work without
+coordination. See [issue triage](docs/issues.md) and [release policy](docs/releases.md).
+
 ## Build and checks
 
 Use Rust 1.92 or newer with Cargo, rustfmt, and Clippy. On Windows, Rust's MSVC

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Host integration guide / 宿主接入文档
+    url: https://github.com/Ethan-decoy/slint_math_input/blob/main/docs/embedding.md
+    about: Component wiring, mathematical keypad, window template, and host responsibilities.
+  - name: Supported behavior / 能力与验证范围
+    url: https://github.com/Ethan-decoy/slint_math_input/blob/main/docs/support.md
+    about: Supported notation, draft behavior, verified platforms, and remaining limitations.

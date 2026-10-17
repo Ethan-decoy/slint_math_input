@@ -1,0 +1,27 @@
+name: Feature request / 功能建议
+description: Describe a mathematical input or host integration need.
+title: "[Feature] "
+labels: [enhancement, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: "English and Chinese are welcome. Describe the user need before suggesting an implementation. 欢迎先描述实际需求。"
+  - type: textarea
+    id: problem
+    attributes:
+      label: Use case and current limitation / 使用场景与当前限制
+      description: Explain who needs this and what cannot be done today.
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Desired behavior / 期望行为
+      description: Include a formula, input trace, or host integration example when relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives and acceptance criteria / 替代方案与验收条件
+      description: Describe a workaround and observable conditions that would make the feature useful.

@@ -1,0 +1,26 @@
+name: Integration question / 接入问题
+description: Ask about embedding, supported notation, or documented behavior.
+title: "[Question] "
+labels: [question, needs-triage]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal and question / 目标与问题
+      description: Explain the host application behavior you want to achieve. English and Chinese are welcome.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Version and setup / 版本与配置
+      description: Include the SMI tag or commit, Rust/Slint versions, OS, enabled features, and relevant host code.
+    validations:
+      required: true
+  - type: textarea
+    id: attempted
+    attributes:
+      label: What you tried / 已尝试的方式
+      description: Link the documentation you followed and include a minimal sanitized example.
+    validations:
+      required: true

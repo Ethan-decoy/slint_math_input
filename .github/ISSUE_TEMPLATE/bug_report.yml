@@ -1,0 +1,52 @@
+name: Bug report / 缺陷报告
+description: Report a reproducible editing, rendering, or integration defect.
+title: "[Bug] "
+labels: [bug, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        English and Chinese are welcome. Include a minimal example; remove private project data from logs and drafts.
+        欢迎中文反馈。请提供最小复现，日志与草稿中不要包含私人项目资料。
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area / 影响范围
+      options:
+        - Editing and selection
+        - Mathematical layout and rendering
+        - LaTeX or draft exchange
+        - Mathematical keypad
+        - Slint embedding or default window
+        - Documentation or build
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Version and environment / 版本与环境
+      description: Include the SMI tag or commit, OS, Rust/Slint versions, enabled features, and relevant display scale or input method.
+      placeholder: "SMI: v0.1.0-preview.1\nOS: Windows 11\nRust / Slint: ...\nFeatures / scale / IME: ..."
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction / 最小复现
+      description: Give ordered key or mouse actions, a minimal host snippet, or a sanitized LaTeX/draft example.
+      placeholder: "1. Start with an empty input\n2. Type 1/2\n3. Press ..."
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior / 预期行为
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior / 实际行为
+      description: Add an error, screenshot, or relevant log when available.
+    validations:
+      required: true
