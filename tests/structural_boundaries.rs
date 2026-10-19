@@ -147,3 +147,83 @@ fn reversing_a_cross_structure_shift_selection_collapses_without_sticking() {
     action(&mut editor, Action::Undo);
     assert_eq!(editor.latex().unwrap(), r"\frac{1}{2}");
 }
+
+#[test]
+fn importing_a_formula_resets_the_vertical_navigation_column() {
+    let mut editor = Editor::new();
+    editor.font_size = 22.0;
+    insert(&mut editor, "1/2");
+    action(&mut editor, Action::Move(Direction::Up, false));
+    editor.import_latex(r"\frac{12}{ab}").unwrap();
+    action(&mut editor, Action::Move(Direction::Up, false));
+    assert_eq!(
+        editor.cursor().offset,
+        2,
+        "navigate from the new formula's end"
+    );
+}
+
+#[test]
+fn home_and_end_reset_the_vertical_navigation_column() {
+    for end in [false, true] {
+        let mut editor = Editor::new();
+        insert(&mut editor, "12/34");
+        if end {
+            action(&mut editor, Action::Home(false));
+        }
+        action(&mut editor, Action::Move(Direction::Up, false));
+        action(
+            &mut editor,
+            if end {
+                Action::End(false)
+            } else {
+                Action::Home(false)
+            },
+        );
+        action(&mut editor, Action::Move(Direction::Down, false));
+        assert_eq!(editor.cursor().offset, if end { 2 } else { 0 });
+    }
+}
+
+#[test]
+fn exiting_a_structure_resets_the_vertical_navigation_column() {
+    let mut editor = Editor::new();
+    insert(&mut editor, "12/34");
+    action(&mut editor, Action::Home(false));
+    action(&mut editor, Action::Move(Direction::Up, false));
+    action(&mut editor, Action::Escape(Direction::Right));
+    action(&mut editor, Action::Move(Direction::Up, false));
+    assert_eq!(editor.cursor().offset, 2);
+}
+
+#[test]
+fn catalog_function_insertion_resets_the_vertical_navigation_column() {
+    let mut editor = Editor::new();
+    insert(&mut editor, "1/2");
+    action(&mut editor, Action::Move(Direction::Up, false));
+    editor.insert_catalog("fn-sin").unwrap();
+    action(&mut editor, Action::Move(Direction::Down, false));
+    assert_eq!(editor.cursor().offset, 1);
+}
+
+#[test]
+fn rejected_edits_preserve_the_existing_vertical_navigation_column() {
+    for rejected in 0..3 {
+        let mut editor = Editor::new();
+        editor.import_latex(r"\frac{12345}{1}").unwrap();
+        action(&mut editor, Action::Move(Direction::Up, false));
+        let numerator_end = editor.cursor();
+        assert_eq!(numerator_end.offset, 5);
+        action(&mut editor, Action::Move(Direction::Down, false));
+        let before = editor.draft().unwrap();
+        let result = match rejected {
+            0 => editor.import_latex(r"\unsupported{x}"),
+            1 => editor.paste(r"\unsupported{x}"),
+            _ => editor.apply(Action::Insert("(".repeat(70))),
+        };
+        assert!(result.is_err());
+        assert_eq!(editor.draft().unwrap(), before);
+        action(&mut editor, Action::Move(Direction::Up, false));
+        assert_eq!(editor.cursor(), numerator_end, "rejected edit {rejected}");
+    }
+}

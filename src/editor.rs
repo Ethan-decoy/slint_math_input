@@ -271,6 +271,7 @@ impl Editor {
             anchor: None,
         };
         self.validate()?;
+        self.preferred_x = None;
         self.record(before);
         Ok(())
     }
@@ -291,6 +292,7 @@ impl Editor {
                 self.state = before;
                 return Err(error);
             }
+            self.preferred_x = None;
             self.record(before);
             Ok(())
         } else {
@@ -530,10 +532,17 @@ impl Editor {
             self.preferred_x = None;
             return Ok(());
         }
+        let vertical_move = matches!(action, Action::Move(Direction::Up | Direction::Down, _));
+        let preferred_x = self.preferred_x;
         let before = self.state.clone();
         if let Err(error) = self.apply_inner(action).and_then(|()| self.validate()) {
             self.state = before;
+            self.preferred_x = preferred_x;
             return Err(error);
+        }
+        // Only consecutive vertical moves reuse the remembered horizontal target.
+        if !vertical_move {
+            self.preferred_x = None;
         }
         self.record(before);
         Ok(())
@@ -697,11 +706,9 @@ impl Editor {
                 for ch in text.chars() {
                     self.type_char(ch)?;
                 }
-                self.preferred_x = None;
             }
             Action::Template(template) => {
                 self.template(template)?;
-                self.preferred_x = None;
             }
             Action::Move(direction, extend) => self.move_direction(direction, extend),
             Action::Home(extend) => self.move_to(

@@ -85,6 +85,9 @@ meaning. A syntactically exportable expression may still be mathematically inval
 - One `Action` is one undo step. Native text commits are individual actions;
   paste is one action. History stores at most 128 content-changing states. Cursor
   movements alone do not create history entries. Restoring a draft is undoable.
+- Consecutive Up/Down moves retain a preferred horizontal column. Successful edits,
+  import/paste, Home/End, and structure exits reset it to the new caret position.
+  Rejected edits preserve both the document and the previous navigation target.
 
 ## Drafts and LaTeX
 

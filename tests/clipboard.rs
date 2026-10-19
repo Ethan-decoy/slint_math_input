@@ -80,3 +80,16 @@ fn keypad_uses_the_same_clipboard_selection_and_failure_transactions() {
     assert!(controller.error.is_some());
     assert_eq!(controller.editor.draft().unwrap(), before);
 }
+
+#[test]
+fn clipboard_paste_resets_the_vertical_navigation_column() {
+    let clipboard = Rc::new(RefCell::new(r"\frac{1}{a}".to_owned()));
+    let mut controller = MathInputController::with_clipboard(MemoryClipboard(clipboard));
+    controller.editor.font_size = 22.0;
+    controller.insert("1/2");
+    controller.keypad("key:up", false);
+    controller.keypad("key:paste", false);
+    assert!(controller.error.is_none());
+    controller.keypad("key:up", false);
+    assert_eq!(controller.editor.cursor().offset, 1);
+}

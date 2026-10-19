@@ -15,6 +15,8 @@ All notable user-facing changes are recorded here, following
 ### Fixed
 
 - Exclude generated Python bytecode from source packages after repository checks.
+- Reset the remembered vertical-navigation column after imports, pastes, edits,
+  and explicit cursor changes; preserve it when an edit is rejected.
 
 ## [0.1.0-preview.1] - 2026-10-16
 
