@@ -40,7 +40,7 @@ merge messages are exempt. PR titles use the same header format and are checked
 by the Conventions workflow. Prefer squash merging after review, using the PR title
 as the final commit header. Feature-branch work-in-progress commits may be cleaned
 up before integration. Do not rewrite another contributor's published work without
-coordination. See [issue triage](docs/issues.md) and [release policy](docs/releases.md).
+coordination. See [issue triage](docs/issues.md) and [version history](CHANGELOG.md).
 
 ## Build and checks
 
@@ -70,15 +70,12 @@ Add behavior-focused tests with new functionality. Use a rustdoc example when an
 API becomes usable, and keep examples accurate about supported LaTeX. Add an
 `examples/` or `tests/` directory when there is runnable content for it.
 
-## Maintainer workflow
+## Versions and distribution
 
-The maintainer integrates reviewed changes in a private development repository
-and exports selected, committed snapshots into this repository. Public history
-keeps normal incremental commits. Contributions received here are integrated
-before the next export.
-
-Package publication and version tags are separate from updating the repository.
-The package currently has `publish = false`.
+See [Releases](https://github.com/Ethan-decoy/slint_math_input/releases) and the
+[changelog](CHANGELOG.md) for published source versions and upgrade information.
+Updates on `main` can precede a versioned release. Distribution currently uses
+GitHub source releases; the package has `publish = false`.
 
 ## Contributions and licensing
 

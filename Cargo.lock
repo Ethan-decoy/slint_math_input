@@ -3794,7 +3794,7 @@ dependencies = [
 
 [[package]]
 name = "slint-math-input"
-version = "0.1.0-preview.3"
+version = "0.1.0-preview.2"
 dependencies = [
  "arboard",
  "serde",
