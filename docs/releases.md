@@ -2,9 +2,20 @@
 
 SMI uses [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html)
 and a curated [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) history.
-This policy applies to every preview and stable release. It is the authoritative
-release checklist; the [release template](../.github/RELEASE_TEMPLATE.md) supplies
-the announcement format. Versioned source releases belong to the public repository.
+This policy is the authoritative checklist for preview and stable releases.
+The [release template](../.github/RELEASE_TEMPLATE.md) is an optional starting point.
+Versioned source releases belong to the public repository.
+
+## When to release
+
+Create a version for changes users need to consume, such as new capabilities,
+bug fixes, or changes to editing behavior, public interfaces, or requirements.
+Documentation and maintenance-only changes normally update `main` and accompany
+the next functional release; they do not require a version of their own.
+
+For announcement-only edits, review the revised text against the existing source
+and read it back after updating. Reuse the published version and its verification
+evidence; wording changes do not require the source-release sequence below.
 
 ## Version and channel
 
@@ -12,7 +23,7 @@ the announcement format. Versioned source releases belong to the public reposito
   the changelog heading, and the `v`-prefixed annotated tag.
 - Use increasing prerelease identifiers, such as `0.1.0-preview.1` and
   `0.1.0-preview.2`. Mark these GitHub releases as prereleases, not Latest.
-- During `0.x`, document public API and schema compatibility explicitly.
+- During `0.x`, document changes to public API and schema compatibility explicitly.
   A `1.0.0` release requires a defined stable public interface.
 - Include editing-behavior changes in compatibility guidance even when Rust
   method signatures and the draft schema are unchanged.
@@ -35,11 +46,12 @@ the announcement format. Versioned source releases belong to the public reposito
 3. **Tag the verified source.** Create an annotated version tag on that commit.
    Verify the tag resolves to the checked source and that version and license
    material agree with the candidate.
-4. **Review the draft delivery.** Prepare a **Draft Release** using the template.
-   Review rendered notes, compatibility guidance, verification links, and actual
-   downloads. Download a tagged source archive and compare its files with the
-   public commit; verify custom assets as described below. The reviewed draft,
-   tag, and downloads must all identify the same source.
+4. **Review the draft delivery.** Prepare a **Draft Release** with notes following
+   the announcement guidance below. Review rendered notes, relevant compatibility
+   guidance, any verification links, and actual downloads. Download a tagged
+   source archive and compare its files with the public commit; verify custom
+   assets as described below. The reviewed draft, tag, and downloads must all
+   identify the same source.
    Draft status does not hide source commits already pushed to a public repository.
 5. **Publish and read back.** Complete publication under the maintainer's existing
    authorization once the gates pass. Verify the published version, source commit,
@@ -74,13 +86,26 @@ must not be reported as passed.
 
 ## Announcement
 
-Use `v<version> — <short outcome>` as the title. Release notes explain user outcomes,
-integration, compatibility, exact validation, known limitations, and downloads.
-Dependency examples must use the released tag or public commit, keeping runtime
-and build dependencies aligned when both are used.
-Do not copy raw commit logs or internal development history into the announcement.
+Use `v<version> — <short outcome>` as the title. Scale the notes to the change:
+a small release usually needs a short paragraph or one to three bullets and a
+full comparison or versioned changelog link. Headings and section counts are
+optional. Describe changes introduced by this version.
+
+Add information when it helps users decide whether or how to upgrade:
+
+- Compatibility and migration guidance for changed behavior, interfaces, schemas,
+  or requirements.
+- Material new limitations or integration instructions; link existing guides
+  instead of repeating their setup steps. Any dependency example uses the actual
+  released tag or public commit, with runtime and build dependencies aligned.
+- Download and integrity details for custom assets, as specified below.
+
+A brief CI link may point to the exact released commit. Keep detailed test counts,
+host scenarios, archive file lists, and publication steps in maintenance records.
+Retain the required validation even when the announcement is short.
+
 GitHub's generated notes use [category configuration](../.github/release.yml)
-as a starting point; maintainers still curate the result.
+as a starting point; curate them into user-facing changes rather than raw commit logs.
 
 ## Source and binary downloads
 
@@ -95,8 +120,9 @@ contents stated explicitly.
 
 ## Corrections and published tags
 
-Keep published version contents and tags stable. Ship source changes under a new
-version; editing release prose is allowed when it corrects or clarifies existing facts.
+Keep published version contents and tags stable. Deliver corrections to released
+source under a new version. Edit published prose in place to shorten, correct, or
+clarify existing facts while preserving the version and its source references.
 Do not routinely force-push shared history to improve wording. An expressly
 authorized history repair requires a verified backup, recorded old/new references,
 and `--force-with-lease` against the inspected remote values. If a release reference

@@ -6,6 +6,12 @@ All notable user-facing changes are recorded here, following
 
 ## [Unreleased]
 
+### Changed
+
+- Scale release announcements to the actual changes, make the template optional,
+  and keep detailed verification in maintenance records. Documentation-only
+  updates and announcement edits normally do not create a new version.
+
 ## [0.1.0-preview.3] - 2026-10-21
 
 ### Changed
