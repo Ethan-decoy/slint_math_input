@@ -6,6 +6,11 @@ All notable user-facing changes are recorded here, following
 
 ## [Unreleased]
 
+### Changed
+
+- Define required release gates, host acceptance evidence, publication readback,
+  and post-release follow-up in the release policy and announcement template.
+
 ## [0.1.0-preview.2] - 2026-10-21
 
 ### Added
