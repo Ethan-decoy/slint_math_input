@@ -49,14 +49,17 @@ fn slash_captures_a_term_and_horizontal_arrows_traverse_both_rows() {
 }
 
 #[test]
-fn scripts_exit_on_operators_but_allow_initial_negative_exponents() {
+fn negative_exponents_keep_arithmetic_inside_until_explicit_exit() {
     let mut editor = Editor::new();
     type_text(&mut editor, "x^-2+1");
-    assert_eq!(editor.latex().unwrap(), "x^{-2}+1");
+    assert_eq!(editor.latex().unwrap(), "x^{-2+1}");
     editor.apply(Action::Undo).unwrap();
     assert_eq!(editor.latex_preview(), "");
     editor.apply(Action::Redo).unwrap();
-    assert_eq!(editor.latex().unwrap(), "x^{-2}+1");
+    assert_eq!(editor.latex().unwrap(), "x^{-2+1}");
+    editor.apply(Action::Escape(Direction::Right)).unwrap();
+    type_text(&mut editor, "+q");
+    assert_eq!(editor.latex().unwrap(), "x^{-2+1}+q");
 }
 
 #[test]

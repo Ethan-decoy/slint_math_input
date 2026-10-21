@@ -819,26 +819,6 @@ impl Editor {
                 offset: index + 1,
             };
         }
-        if "+-=<>*".contains(ch)
-            && self.selection_range().is_none()
-            && self.state.cursor.offset > 0
-            && self.state.cursor.offset == self.current().nodes.len()
-            && let Some((parent, index)) = self.state.root.parent(self.state.cursor.row)
-            && let Node::Script {
-                placement: _,
-                base,
-                sub,
-                sup,
-            } = &self.row(parent).nodes[index]
-            && !base.centers_limits()
-            && (sub.as_ref().is_some_and(|r| r.id == self.state.cursor.row)
-                || sup.as_ref().is_some_and(|r| r.id == self.state.cursor.row))
-        {
-            self.state.cursor = Position {
-                row: parent,
-                offset: index + 1,
-            };
-        }
         match ch {
             '/' => return self.template(Template::Fraction),
             '^' => return self.template(Template::Power),

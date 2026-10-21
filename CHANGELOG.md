@@ -14,6 +14,8 @@ All notable user-facing changes are recorded here, following
 
 ### Fixed
 
+- Keep typed operators in the active superscript or subscript instead of
+  silently moving the caret to the parent row; keyboard and keypad agree.
 - Exclude generated Python bytecode from source packages after repository checks.
 - Reset the remembered vertical-navigation column after imports, pastes, edits,
   and explicit cursor changes; preserve it when an edit is rejected.

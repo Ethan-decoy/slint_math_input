@@ -56,10 +56,11 @@ meaning. A syntactically exportable expression may still be mathematically inval
 - Backspace after a fraction enters its denominator. Backspace at a fraction
   child's left boundary removes the fraction bar and preserves both rows. Delete
   at the corresponding right boundary follows the same preservation principle.
-- `+`, `-`, `=`, `<`, `>`, `*` at the nonempty end of an ordinary script return to its parent
-  row. An initial minus remains inside the script. Use LaTeX import for expressions
-  such as `x^{a+b}` that need an internal binary operator.
-  Limit conditions and brace annotations retain their scope. At the end of a
+- Operators stay in the caret's current row, including at the end of a
+  superscript or subscript: typing `P^n+m` produces `P^{n+m}`. To continue in the
+  parent row, explicitly leave the script with the right arrow at its end, Tab,
+  or the keypad's exit command before typing the operator. An initial minus,
+  limit conditions and brace annotations also retain their scope. At the end of a
   subscript, `^` enters the same base's superscript, and conversely `_` after a
   superscript enters its subscript; `x_1^2` and `x^2_1` produce the same structure.
 - Tab or Escape exits the current structure; Shift exits toward its left. At the
