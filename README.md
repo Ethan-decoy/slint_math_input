@@ -9,7 +9,7 @@ and exchange supported mathematics through LaTeX.
 
 ## Status
 
-**Delivery candidate `0.1.0-preview.1`; not published to crates.io.** The editing core, shared
+**Source preview `0.1.0-preview.2`; not published to crates.io.** The editing core, shared
 mathematical layout, reusable Slint surface, and native demonstration are
 implemented. `publish = false` remains while interaction and platform validation
 continues. The [support table](docs/support.md) records verification and differences.
