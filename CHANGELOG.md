@@ -6,6 +6,8 @@ All notable user-facing changes are recorded here, following
 
 ## [Unreleased]
 
+## [0.1.0-preview.3] - 2026-10-21
+
 ### Changed
 
 - Define required release gates, host acceptance evidence, publication readback,
@@ -66,6 +68,7 @@ All notable user-facing changes are recorded here, following
 This is a GitHub source preview, not a crates.io publication. See the
 [support table](docs/support.md) for verified behavior and remaining native checks.
 
-[Unreleased]: https://github.com/Ethan-decoy/slint_math_input/compare/v0.1.0-preview.2...HEAD
+[Unreleased]: https://github.com/Ethan-decoy/slint_math_input/compare/v0.1.0-preview.3...HEAD
+[0.1.0-preview.3]: https://github.com/Ethan-decoy/slint_math_input/compare/v0.1.0-preview.2...v0.1.0-preview.3
 [0.1.0-preview.2]: https://github.com/Ethan-decoy/slint_math_input/compare/v0.1.0-preview.1...v0.1.0-preview.2
 [0.1.0-preview.1]: https://github.com/Ethan-decoy/slint_math_input/releases/tag/v0.1.0-preview.1
