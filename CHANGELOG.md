@@ -6,6 +6,17 @@ All notable user-facing changes are recorded here, following
 
 ## [Unreleased]
 
+## [0.1.0-preview.4] - 2026-11-06
+
+### Fixed
+
+- Keep a coefficient typed before `\log_b(x)` or `x^2` outside the scripted
+  base when the caret is placed with the mouse, including styled/decorated bases.
+- Keep clicks beyond a formula's horizontal edges at the document boundaries
+  instead of entering nested slots, such as a root's degree.
+
+The public Rust interfaces and version-1 draft format remain compatible.
+
 ## [0.1.0-preview.2] - 2026-10-21
 
 ### Added
@@ -61,6 +72,7 @@ All notable user-facing changes are recorded here, following
 This is a GitHub source preview, not a crates.io publication. See the
 [support table](docs/support.md) for verified behavior and remaining native checks.
 
-[Unreleased]: https://github.com/Ethan-decoy/slint_math_input/compare/v0.1.0-preview.2...HEAD
+[Unreleased]: https://github.com/Ethan-decoy/slint_math_input/compare/v0.1.0-preview.4...HEAD
+[0.1.0-preview.4]: https://github.com/Ethan-decoy/slint_math_input/compare/v0.1.0-preview.2...v0.1.0-preview.4
 [0.1.0-preview.2]: https://github.com/Ethan-decoy/slint_math_input/compare/v0.1.0-preview.1...v0.1.0-preview.2
 [0.1.0-preview.1]: https://github.com/Ethan-decoy/slint_math_input/releases/tag/v0.1.0-preview.1

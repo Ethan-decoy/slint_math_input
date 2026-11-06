@@ -68,6 +68,12 @@ meaning. A syntactically exportable expression may still be mathematically inval
   Ctrl/Cmd+Home/End move to document boundaries. Ctrl/Cmd+Backspace/Delete delete
   to the current row boundary. There is no word-level Ctrl+arrow navigation yet.
 - Pointer placement and dragging use the same logical geometry as rendering.
+  Clicking before a single-atom scripted base, such as `\log_b` or `x^2`, inserts
+  in its parent row, including through single-atom styles and decorations; a
+  coefficient typed there stays outside the base. Grouped bases, empty base
+  placeholders and the script rows remain directly editable. Clicks beyond the
+  formula's horizontal edges stay in the root row rather than entering a nearby
+  nested slot, such as a root's degree.
   The viewport follows the active caret. Formula-surface wheel scrolling,
   touch handles, double-click word selection and mobile keyboards are not provided.
 - The standard mathematical keypad has numeric, alphabetic (including case switching) and

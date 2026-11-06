@@ -64,6 +64,19 @@ pub struct Caret {
     /// Geometry of the insertion bar.
     pub rect: Rect,
     pub(crate) depth: usize,
+    // Pointer hits may target an owning row at a shared visual edge; the
+    // editing position stays available to keyboard navigation and rendering.
+    hit_position: Position,
+}
+impl Caret {
+    fn new(position: Position, rect: Rect, depth: usize) -> Self {
+        Self {
+            position,
+            rect,
+            depth,
+            hit_position: position,
+        }
+    }
 }
 #[derive(Clone, Debug)]
 pub(crate) enum Draw {
@@ -176,12 +189,23 @@ impl Layout {
         self.carets.iter().find(|c| c.position == position)
     }
     /// Return the nearest insertion position, preferring nearby nested slots.
+    /// Shared left edges of single-atom script bases target their parent row.
+    /// Clicks beyond the formula's horizontal edges stay in the root row.
     pub fn hit_test(&self, x: f32, y: f32) -> Position {
+        let first = self.carets.first().expect("root has a caret");
+        let last = self.carets.last().expect("root has a caret");
+        // Outside the formula, raised/lowered slots must not steal its edges.
+        if x <= first.rect.x {
+            return first.position;
+        }
+        if x >= last.rect.x {
+            return last.position;
+        }
         self.carets
             .iter()
             .min_by(|a, b| score(a, x, y).total_cmp(&score(b, x, y)))
             .expect("root has a caret")
-            .position
+            .hit_position
     }
     /// Selection rectangles for a range within one row.
     pub fn range_rects(&self, row: u64, start: usize, end: usize) -> Vec<Rect> {
@@ -243,6 +267,24 @@ fn score(c: &Caret, x: f32, y: f32) -> f32 {
     let center = c.rect.y + c.rect.height / 2.0;
     (c.rect.x - x).abs() + (center - y).abs() * 1.5 - c.depth as f32 * 0.03
 }
+fn script_base_starts_at(base: &Row, position: Position) -> bool {
+    if position.offset != 0 {
+        return false;
+    }
+    if position.row == base.id {
+        return true;
+    }
+    // Single-atom decorations share the base's left edge. Multi-atom groups
+    // and bodies behind visible delimiters keep their own editable boundaries.
+    match base.nodes.as_slice() {
+        [
+            Node::Styled { body, .. }
+            | Node::Accent { body, .. }
+            | Node::Stacked { base: body, .. },
+        ] if body.nodes.len() == 1 => script_base_starts_at(body, position),
+        _ => false,
+    }
+}
 fn row_layout(row: &Row, size: f32, depth: usize) -> BoxLayout {
     let mut result = BoxLayout {
         ascent: size * 0.78,
@@ -257,19 +299,19 @@ fn row_layout(row: &Row, size: f32, depth: usize) -> BoxLayout {
             width: size * 0.42,
             height: size * 0.7,
         }));
-        result.carets.push(Caret {
-            position: Position {
+        result.carets.push(Caret::new(
+            Position {
                 row: row.id,
                 offset: 0,
             },
-            rect: Rect {
+            Rect {
                 x: size * 0.29,
                 y: -size * 0.78,
                 width: 1.5,
                 height: size,
             },
             depth,
-        });
+        ));
         return result;
     }
     for (index, node) in row.nodes.iter().enumerate() {
@@ -278,20 +320,35 @@ fn row_layout(row: &Row, size: f32, depth: usize) -> BoxLayout {
         } else {
             size * 0.015
         };
-        result.carets.push(Caret {
-            position: Position {
+        result.carets.push(Caret::new(
+            Position {
                 row: row.id,
                 offset: index,
             },
-            rect: Rect {
+            Rect {
                 x: result.width,
                 y: -size * 0.78,
                 width: 1.5,
                 height: size,
             },
             depth,
-        });
-        let child = node_layout(node, size, depth + 1);
+        ));
+        let mut child = node_layout(node, size, depth + 1);
+        if let Node::Script { base, .. } = node
+            && base.nodes.len() == 1
+        {
+            // A single-atom base shares its left edge with the whole script.
+            // Keep its caret for keyboard editing, but prepend in the parent
+            // row when that edge is clicked. Propagate through nested scripts.
+            for caret in &mut child.carets {
+                if script_base_starts_at(base, caret.hit_position) {
+                    caret.hit_position = Position {
+                        row: row.id,
+                        offset: index,
+                    };
+                }
+            }
+        }
         result.ascent = result.ascent.max(child.ascent);
         result.descent = result.descent.max(child.descent);
         result.spans.push(Span {
@@ -309,19 +366,19 @@ fn row_layout(row: &Row, size: f32, depth: usize) -> BoxLayout {
         result.place(child, x, 0.0);
         result.width += width + pad * 2.0;
     }
-    result.carets.push(Caret {
-        position: Position {
+    result.carets.push(Caret::new(
+        Position {
             row: row.id,
             offset: row.nodes.len(),
         },
-        rect: Rect {
+        Rect {
             x: result.width,
             y: -size * 0.78,
             width: 1.5,
             height: size,
         },
         depth,
-    });
+    ));
     result
 }
 fn leaf(text: &str, size: f32, italic: bool) -> BoxLayout {

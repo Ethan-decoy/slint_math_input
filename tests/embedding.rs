@@ -202,6 +202,57 @@ fn separate_host_instances_keep_focus_history_and_pointer_coordinates_independen
         assert!(second.borrow().editor.latex().unwrap().ends_with("5}"));
         assert_eq!(first.borrow().editor.latex().unwrap(), "x^{2}");
     }
+    // Exercise the reported edit through a host-owned MathInput, its viewport
+    // coordinate conversion and the controller, at two device pixel densities.
+    for scale in [1.0, 2.0] {
+        ui.window().dispatch_event(WindowEvent::ScaleFactorChanged {
+            scale_factor: scale,
+        });
+        ui.window().dispatch_event(WindowEvent::Resized {
+            size: slint::LogicalSize::new(800.0, 200.0),
+        });
+        for (source, dx, expected) in [
+            (r"\log_{b}\left(x\right)", 1.0, r"y\log_{b}\left(x\right)"),
+            (r"\mathbf{x}_{n}", 1.0, r"y\mathbf{x}_{n}"),
+            (r"\overline{x}_{n}", 1.0, r"y\overline{x}_{n}"),
+            (r"\sqrt[n]{x}", -1.0, r"y\sqrt[n]{x}"),
+        ] {
+            second.borrow_mut().editor.import_latex(source).unwrap();
+            ui.set_second_view(view(second.borrow().view(scale).unwrap()));
+            let width = (800.0 * scale) as usize;
+            let mut scaled_pixels =
+                vec![slint::Rgb8Pixel::default(); width * (200.0 * scale) as usize];
+            ui.window().request_redraw();
+            adapter.draw_if_needed(|renderer| {
+                renderer.render(&mut scaled_pixels, width);
+            });
+            let geometry = second.borrow().editor.layout();
+            let start = slint_math_input::Position {
+                row: second.borrow().editor.cursor().row,
+                offset: 0,
+            };
+            let target = geometry.caret(start).unwrap().rect;
+            let point = slint::LogicalPosition::new(
+                412.0 + target.x + dx,
+                (200.0 - geometry.height) / 2.0 + target.y + target.height * 0.25,
+            );
+            ui.window().dispatch_event(WindowEvent::PointerPressed {
+                position: point,
+                button: PointerEventButton::Left,
+            });
+            ui.window().dispatch_event(WindowEvent::PointerReleased {
+                position: point,
+                button: PointerEventButton::Left,
+            });
+            key(&ui, "y");
+            assert_eq!(
+                second.borrow().editor.latex().unwrap(),
+                expected,
+                "{source}, scale {scale}"
+            );
+            assert_eq!(first.borrow().editor.latex().unwrap(), "x^{2}");
+        }
+    }
     let mut check = Editor::new();
     check
         .import_latex(&second.borrow().editor.latex().unwrap())

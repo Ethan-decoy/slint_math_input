@@ -1,11 +1,215 @@
-//! Operators respect the structural caret in editable scripts.
-use slint_math_input::{Action, Direction, Editor};
+//! Keyboard and pointer edits preserve script scope and structural boundaries.
+use slint_math_input::{Action, Direction, Editor, Position};
 
 fn type_text(editor: &mut Editor, text: &str) {
     for ch in text.chars() {
         editor.apply(Action::Insert(ch.to_string())).unwrap();
     }
 }
+
+fn editor_from_latex(source: &str, font_size: f32) -> Editor {
+    let mut editor = Editor::new();
+    editor.font_size = font_size;
+    editor.import_latex(source).unwrap();
+    editor
+}
+
+fn restore_editor(draft: &str, font_size: f32) -> Editor {
+    let mut editor = Editor::from_draft(draft).unwrap();
+    // Font size is presentation state and is deliberately absent from drafts.
+    editor.font_size = font_size;
+    editor
+}
+
+fn click_near_caret(editor: &mut Editor, target: Position, dx: f32, height_fraction: f32) {
+    let caret = editor.layout().caret(target).unwrap().rect;
+    editor
+        .pointer(
+            caret.x + dx,
+            caret.y + caret.height * height_fraction,
+            false,
+        )
+        .unwrap();
+}
+
+// Pointer placement and structural scope.
+
+#[test]
+fn clicking_before_scripts_keeps_coefficients_outside_the_base() {
+    for source in [
+        r"\log_{b}",
+        r"\log_{bx}",
+        r"\log_{b}\left(x\right)",
+        "x^{2}",
+        "x_{n}^{2}",
+        "{x^{2}}^{3}",
+        r"\mathbf{x}_{n}",
+        r"\mathbf{\mathit{x}}_{n}",
+        r"\overline{x}_{n}",
+        r"\overset{a}{x}_{n}",
+    ] {
+        for size in [18.0, 32.0, 60.0] {
+            let seed = editor_from_latex(source, size);
+            let start = Position {
+                row: seed.cursor().row,
+                offset: 0,
+            };
+            let draft = seed.draft().unwrap();
+            let expected = format!("y{}", seed.latex().unwrap());
+            let mut control = restore_editor(&draft, size);
+            control.set_position(start, false).unwrap();
+            type_text(&mut control, "y");
+            assert_eq!(control.latex().unwrap(), expected, "explicit root position");
+            for fraction in [0.25, 0.5, 0.75] {
+                for dx in [-size * 0.03, 0.0, size * 0.03] {
+                    let mut editor = restore_editor(&draft, size);
+                    click_near_caret(&mut editor, start, dx, fraction);
+                    let hit = editor.cursor();
+                    type_text(&mut editor, "y");
+                    assert_eq!(
+                        editor.latex().unwrap(),
+                        expected,
+                        "{source}, size {size}, dx {dx}, height {fraction}: hit {hit:?}, intended {start:?}"
+                    );
+                    assert_eq!(hit, start);
+                    editor.apply(Action::Undo).unwrap();
+                    assert_eq!(editor.latex().unwrap(), source);
+                    editor.apply(Action::Redo).unwrap();
+                    assert_eq!(editor.latex().unwrap(), expected);
+                    assert_eq!(
+                        Editor::from_draft(&editor.draft().unwrap())
+                            .unwrap()
+                            .latex()
+                            .unwrap(),
+                        expected
+                    );
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn clicking_before_a_script_targets_its_immediate_parent_row() {
+    for (source, nested, offset, expected) in [
+        (
+            r"a+\log_{b}\left(x\right)",
+            false,
+            2,
+            r"a+y\log_{b}\left(x\right)",
+        ),
+        (
+            r"\frac{\log_{b}\left(x\right)}{2}",
+            true,
+            0,
+            r"\frac{y\log_{b}\left(x\right)}{2}",
+        ),
+    ] {
+        let mut editor = editor_from_latex(source, 32.0);
+        editor.apply(Action::RootHome(false)).unwrap();
+        if nested {
+            editor.apply(Action::Move(Direction::Right, false)).unwrap();
+        }
+        let start = Position {
+            row: editor.cursor().row,
+            offset,
+        };
+        click_near_caret(&mut editor, start, 1.0, 0.25);
+        assert_eq!(editor.cursor(), start);
+        type_text(&mut editor, "y");
+        assert_eq!(editor.latex().unwrap(), expected);
+    }
+}
+
+#[test]
+fn grouped_script_bases_remain_editable_by_pointer() {
+    for (source, steps, expected) in [
+        ("{ab}^{2}", 1, "{yab}^{2}"),
+        (r"\mathbf{ab}_{n}", 2, r"\mathbf{yab}_{n}"),
+    ] {
+        let mut editor = editor_from_latex(source, 32.0);
+        editor.apply(Action::RootHome(false)).unwrap();
+        let root = editor.cursor();
+        for _ in 0..steps {
+            editor.apply(Action::Move(Direction::Right, false)).unwrap();
+        }
+        let inside = editor.cursor();
+        assert_ne!(inside.row, root.row);
+        click_near_caret(&mut editor, inside, 1.0, 0.5);
+        assert_eq!(editor.cursor(), inside);
+        type_text(&mut editor, "y");
+        assert_eq!(editor.latex().unwrap(), expected);
+    }
+}
+
+#[test]
+fn clicking_outside_the_formula_keeps_text_out_of_nested_slots() {
+    for source in [
+        r"\sqrt[n]{x}",
+        r"\sqrt[\frac{1}{n}]{x}",
+        r"\frac{a}{b}",
+        r"\sum_{n=1}^{10}x",
+    ] {
+        for size in [18.0, 32.0, 60.0] {
+            let seed = editor_from_latex(source, size);
+            let end = seed.cursor();
+            let draft = seed.draft().unwrap();
+            for target in [
+                Position {
+                    row: end.row,
+                    offset: 0,
+                },
+                end,
+            ] {
+                let mut control = restore_editor(&draft, size);
+                control.set_position(target, false).unwrap();
+                type_text(&mut control, "y");
+                let expected = control.latex().unwrap();
+                let sign = if target.offset == 0 { -1.0 } else { 1.0 };
+                for fraction in [0.25, 0.5, 0.75] {
+                    let mut editor = restore_editor(&draft, size);
+                    click_near_caret(&mut editor, target, sign * size * 0.03, fraction);
+                    let hit = editor.cursor();
+                    type_text(&mut editor, "y");
+                    assert_eq!(
+                        editor.latex().unwrap(),
+                        expected,
+                        "{source}, size {size}, height {fraction}, hit {hit:?}, target {target:?}"
+                    );
+                    assert_eq!(hit, target);
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn empty_script_bases_remain_fillable_by_pointer() {
+    let mut editor = editor_from_latex("{}_{b}", 32.0);
+    editor.apply(Action::RootHome(false)).unwrap();
+    editor.apply(Action::Move(Direction::Right, false)).unwrap();
+    let inside = editor.cursor();
+    click_near_caret(&mut editor, inside, 0.0, 0.5);
+    assert_eq!(editor.cursor(), inside);
+    type_text(&mut editor, "x");
+    assert_eq!(editor.latex().unwrap(), "x_{b}");
+}
+
+#[test]
+fn pointer_reentry_and_restored_drafts_keep_operators_in_the_script() {
+    let mut editor = editor_from_latex("P^{n}", 32.0);
+    editor.apply(Action::Move(Direction::Left, false)).unwrap();
+    let inside = editor.cursor();
+    editor.apply(Action::Escape(Direction::Right)).unwrap();
+    assert!(editor.at_root());
+    click_near_caret(&mut editor, inside, 0.0, 0.5);
+    assert_eq!(editor.cursor(), inside);
+    let mut restored = restore_editor(&editor.draft().unwrap(), editor.font_size);
+    type_text(&mut restored, "+m");
+    assert_eq!(restored.latex().unwrap(), "P^{n+m}");
+}
+
+// Keyboard input and history.
 
 #[test]
 fn operators_at_script_end_stay_in_the_active_row() {
@@ -44,22 +248,29 @@ fn script_scope_survives_undo_redo_and_explicit_exit() {
     assert_eq!(editor.latex().unwrap(), "P^{n+m}+q");
 }
 
+// Slint controller input.
+
+#[cfg(feature = "slint-ui")]
 #[test]
-fn pointer_reentry_and_restored_drafts_keep_operators_in_the_script() {
-    let mut editor = Editor::new();
-    editor.import_latex("P^{n}").unwrap();
-    editor.apply(Action::Move(Direction::Left, false)).unwrap();
-    let inside = editor.cursor();
-    let caret = editor.layout().caret(inside).unwrap().rect;
-    editor.apply(Action::Escape(Direction::Right)).unwrap();
-    assert!(editor.at_root());
-    editor
-        .pointer(caret.x, caret.y + caret.height / 2.0, false)
-        .unwrap();
-    assert_eq!(editor.cursor(), inside);
-    let mut restored = Editor::from_draft(&editor.draft().unwrap()).unwrap();
-    type_text(&mut restored, "+m");
-    assert_eq!(restored.latex().unwrap(), "P^{n+m}");
+fn mixed_input_can_prepend_a_coefficient_to_an_existing_logarithm() {
+    use slint_math_input::gui::MathInputController;
+    let mut controller = MathInputController::new();
+    controller.keypad("catalog:log-base", false);
+    controller.insert("b");
+    controller.keypad("key:next", false);
+    controller.insert("(x)");
+    let start = Position {
+        row: controller.editor.cursor().row,
+        offset: 0,
+    };
+    let caret = controller.editor.layout().caret(start).unwrap().rect;
+    controller.pointer(caret.x + 1.0, caret.y + caret.height * 0.25, false);
+    controller.insert("y");
+    assert!(controller.error.is_none(), "{:?}", controller.error);
+    assert_eq!(
+        controller.editor.latex().unwrap(),
+        r"y\log_{b}\left(x\right)"
+    );
 }
 
 #[cfg(feature = "slint-ui")]
