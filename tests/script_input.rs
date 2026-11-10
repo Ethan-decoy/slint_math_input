@@ -1,5 +1,5 @@
 //! Keyboard and pointer edits preserve script scope and structural boundaries.
-use slint_math_input::{Action, Direction, Editor, Position};
+use slint_math_input::{Action, Direction, Editor, Position, Template};
 
 fn type_text(editor: &mut Editor, text: &str) {
     for ch in text.chars() {
@@ -248,6 +248,62 @@ fn script_scope_survives_undo_redo_and_explicit_exit() {
     assert_eq!(editor.latex().unwrap(), "P^{n+m}+q");
 }
 
+#[test]
+fn opposite_script_templates_use_the_same_base_and_preserve_history() {
+    for (prefix, template, suffix, expected) in [
+        ("x_1", Template::Power, "2", "x_{1}^{2}"),
+        ("x^2", Template::Subscript, "1", "x_{1}^{2}"),
+        ("x_1^2", Template::Subscript, "3", "x_{13}^{2}"),
+        ("x^2_1", Template::Power, "3", "x_{1}^{23}"),
+    ] {
+        let mut editor = Editor::new();
+        type_text(&mut editor, prefix);
+        let before = editor.draft().unwrap();
+        editor.apply(Action::Template(template)).unwrap();
+        let positioned = editor.draft().unwrap();
+        type_text(&mut editor, suffix);
+        assert_eq!(editor.latex().unwrap(), expected, "{prefix}");
+        let after = editor.draft().unwrap();
+        editor.apply(Action::Undo).unwrap();
+        assert_eq!(editor.draft().unwrap(), positioned);
+        if prefix == "x_1" || prefix == "x^2" {
+            // Creating a missing script is an edit; revisiting one is navigation.
+            editor.apply(Action::Undo).unwrap();
+            assert_eq!(editor.draft().unwrap(), before);
+            editor.apply(Action::Redo).unwrap();
+        }
+        editor.apply(Action::Redo).unwrap();
+        assert_eq!(editor.draft().unwrap(), after);
+    }
+}
+
+#[test]
+fn script_templates_keep_mid_row_and_selected_edits_inside_the_active_script() {
+    for selected in [false, true] {
+        for template in [false, true] {
+            let mut editor = Editor::new();
+            type_text(&mut editor, "x_12");
+            editor
+                .apply(Action::Move(Direction::Left, selected))
+                .unwrap();
+            editor
+                .apply(if template {
+                    Action::Template(Template::Power)
+                } else {
+                    Action::Insert("^".into())
+                })
+                .unwrap();
+            if !selected {
+                type_text(&mut editor, "3");
+            }
+            assert_eq!(
+                editor.latex().unwrap(),
+                if selected { "x_{1^{2}}" } else { "x_{1^{3}2}" }
+            );
+        }
+    }
+}
+
 // Slint controller input.
 
 #[cfg(feature = "slint-ui")]
@@ -258,7 +314,7 @@ fn mixed_input_can_prepend_a_coefficient_to_an_existing_logarithm() {
     controller.keypad("catalog:log-base", false);
     controller.insert("b");
     controller.keypad("key:next", false);
-    controller.insert("(x)");
+    controller.insert("x)");
     let start = Position {
         row: controller.editor.cursor().row,
         offset: 0,
@@ -296,5 +352,200 @@ fn committed_text_and_keypad_both_keep_script_scope() {
         controller.keypad("+", false);
         controller.keypad("q", false);
         assert_eq!(controller.editor.latex().unwrap(), "P^{n+m}+q");
+    }
+}
+
+#[cfg(feature = "slint-ui")]
+#[test]
+fn keypad_and_keyboard_attach_opposite_scripts_to_the_same_base() {
+    use slint_math_input::gui::MathInputController;
+    for (prefix, token, suffix) in [("x_1", "key:power", "2"), ("x^2", "key:subscript", "1")] {
+        let mut controller = MathInputController::new();
+        controller.insert(prefix);
+        controller.keypad(token, false);
+        controller.insert(suffix);
+        assert!(controller.error.is_none(), "{:?}", controller.error);
+        assert_eq!(controller.editor.latex().unwrap(), "x_{1}^{2}");
+    }
+}
+
+#[test]
+fn clicking_after_a_scripted_function_targets_its_parent_baseline() {
+    for source in [r"\log_{b}", "x^{2}", "x_{n}"] {
+        for size in [18.0, 32.0, 60.0] {
+            let seed = editor_from_latex(source, size);
+            let end = seed.cursor();
+            let draft = seed.draft().unwrap();
+            for fraction in [0.25, 0.5, 0.75] {
+                for dx in [-size * 0.03, 0.0, size * 0.03] {
+                    let mut editor = restore_editor(&draft, size);
+                    click_near_caret(&mut editor, end, dx, fraction);
+                    let hit = editor.cursor();
+                    type_text(&mut editor, "y");
+                    assert_eq!(
+                        editor.latex().unwrap(),
+                        format!("{source}y"),
+                        "{source}, size {size}, dx {dx}, height {fraction}: hit {hit:?}, intended {end:?}"
+                    );
+                }
+            }
+        }
+    }
+}
+
+#[cfg(feature = "slint-ui")]
+#[test]
+fn base_logarithm_has_an_argument_after_leaving_its_base() {
+    use slint_math_input::gui::MathInputController;
+    let mut controller = MathInputController::new();
+    controller.keypad("catalog:log-base", false);
+    controller.insert("b");
+    controller.keypad("key:next", false);
+    controller.insert("x");
+    assert!(controller.error.is_none(), "{:?}", controller.error);
+    assert_eq!(
+        controller.editor.latex().unwrap(),
+        r"\log_{b}\left(x\right)"
+    );
+}
+#[test]
+fn logarithm_template_navigates_from_base_to_argument_and_back_to_baseline() {
+    for leave in [
+        Action::Move(Direction::Right, false),
+        Action::Escape(Direction::Right),
+    ] {
+        for prefix in ["", "a+"] {
+            let mut editor = Editor::new();
+            type_text(&mut editor, prefix);
+            editor.insert_catalog("log-base").unwrap();
+            type_text(&mut editor, "a+1");
+            let base = editor.cursor();
+            let base_height = editor.layout().caret(base).unwrap().rect.height;
+            assert!(editor.latex().is_err(), "the argument is still empty");
+            editor.apply(leave.clone()).unwrap();
+            let argument = editor.cursor();
+            assert_ne!(argument.row, base.row);
+            assert!(editor.layout().caret(argument).unwrap().rect.height > base_height);
+            type_text(&mut editor, "x");
+            let expected = format!(r"{prefix}\log_{{a+1}}\left(x\right)");
+            assert_eq!(editor.latex().unwrap(), expected);
+            let draft = editor.draft().unwrap();
+            editor.apply(Action::Undo).unwrap();
+            assert!(editor.latex().is_err());
+            editor.apply(Action::Redo).unwrap();
+            assert_eq!(editor.draft().unwrap(), draft);
+            let mut editor = Editor::from_draft(&draft).unwrap();
+            type_text(&mut editor, ")");
+            type_text(&mut editor, "-");
+            editor.insert_catalog("log-base").unwrap();
+            type_text(&mut editor, "b");
+            editor.apply(leave.clone()).unwrap();
+            type_text(&mut editor, "y");
+            assert_eq!(
+                editor.latex().unwrap(),
+                format!(r"{expected}-\log_{{b}}\left(y\right)")
+            );
+            editor.apply(leave.clone()).unwrap();
+            type_text(&mut editor, "+z");
+            assert_eq!(
+                editor.latex().unwrap(),
+                format!(r"{expected}-\log_{{b}}\left(y\right)+z")
+            );
+        }
+    }
+}
+
+#[test]
+fn logarithm_template_wraps_the_selection_in_its_argument() {
+    let mut editor = Editor::new();
+    type_text(&mut editor, "x+y");
+    editor.apply(Action::SelectAll).unwrap();
+    editor.insert_catalog("log-base").unwrap();
+    type_text(&mut editor, "b");
+    assert_eq!(editor.latex().unwrap(), r"\log_{b}\left(x+y\right)");
+    editor.apply(Action::Escape(Direction::Right)).unwrap();
+    assert!(!editor.at_root());
+    editor.apply(Action::End(false)).unwrap();
+    type_text(&mut editor, "+z");
+    assert_eq!(editor.latex().unwrap(), r"\log_{b}\left(x+y+z\right)");
+}
+
+#[test]
+fn powered_logarithms_advance_from_either_script_into_the_argument() {
+    let mut seed = Editor::new();
+    seed.insert_catalog("log-base").unwrap();
+    type_text(&mut seed, "b");
+    let base = seed.cursor();
+    type_text(&mut seed, "^2");
+    let exponent = seed.cursor();
+    let draft = seed.draft().unwrap();
+    for position in [base, exponent] {
+        for leave in [
+            Action::Move(Direction::Right, false),
+            Action::Escape(Direction::Right),
+        ] {
+            let mut editor = Editor::from_draft(&draft).unwrap();
+            editor.set_position(position, false).unwrap();
+            editor.apply(leave.clone()).unwrap();
+            assert!(!editor.at_root());
+            type_text(&mut editor, "x");
+            assert_eq!(editor.latex().unwrap(), r"\log_{b}^{2}\left(x\right)");
+            let filled = editor.draft().unwrap();
+            editor.apply(Action::Undo).unwrap();
+            assert!(editor.latex().is_err());
+            editor.apply(Action::Redo).unwrap();
+            assert_eq!(editor.draft().unwrap(), filled);
+            editor.apply(leave).unwrap();
+            type_text(&mut editor, "+y");
+            assert_eq!(editor.latex().unwrap(), r"\log_{b}^{2}\left(x\right)+y");
+        }
+    }
+}
+
+#[cfg(feature = "slint-ui")]
+#[test]
+fn powered_logarithms_accept_controller_navigation_from_keyboard_and_keypad() {
+    use slint_math_input::gui::MathInputController;
+    for (key, token) in [
+        (slint::platform::Key::RightArrow, "key:right"),
+        (slint::platform::Key::Tab, "key:next"),
+        (slint::platform::Key::Escape, "key:next"),
+    ] {
+        for keypad in [false, true] {
+            let mut controller = MathInputController::new();
+            controller.keypad("catalog:log-base", false);
+            controller.insert("b^2");
+            if keypad {
+                controller.keypad(token, false);
+            } else {
+                assert!(controller.key(&char::from(key).to_string(), false, false, false));
+            }
+            controller.insert("x");
+            assert!(controller.error.is_none(), "{:?}", controller.error);
+            assert_eq!(
+                controller.editor.latex().unwrap(),
+                r"\log_{b}^{2}\left(x\right)"
+            );
+        }
+    }
+}
+
+#[test]
+fn bare_logarithms_and_other_scripts_keep_their_existing_exit_behavior() {
+    for source in [
+        r"\log_{b}",
+        r"\log_{b}^{2}",
+        r"x_{b}\left(y\right)",
+        r"x_{b}^{2}\left(y\right)",
+    ] {
+        let mut editor = editor_from_latex(source, 32.0);
+        editor.apply(Action::RootHome(false)).unwrap();
+        editor.apply(Action::Move(Direction::Right, false)).unwrap();
+        editor.apply(Action::Move(Direction::Right, false)).unwrap();
+        editor.apply(Action::Move(Direction::Right, false)).unwrap();
+        editor.apply(Action::End(false)).unwrap();
+        editor.apply(Action::Escape(Direction::Right)).unwrap();
+        assert!(editor.at_root(), "{source}");
+        assert_eq!(editor.cursor().offset, 1);
     }
 }

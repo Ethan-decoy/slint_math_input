@@ -145,6 +145,93 @@ fn binomial_navigation_selection_and_unwrap_preserve_arguments() {
 }
 
 #[test]
+fn roots_and_bounded_operators_traverse_all_slots_in_both_directions() {
+    for (template, first, second, expected) in [
+        (Template::IndexedRoot, "3", "x", r"\sqrt[3]{x}"),
+        (Template::Sum, "i=1", "n", r"\sum_{i=1}^{n}"),
+        (Template::Product, "i=1", "n", r"\prod_{i=1}^{n}"),
+        (Template::Integral, "0", "1", r"\int_{0}^{1}"),
+    ] {
+        let mut editor = Editor::new();
+        editor.apply(Action::Template(template)).unwrap();
+        editor.apply(Action::Home(false)).unwrap();
+        editor.apply(Action::End(true)).unwrap();
+        insert(&mut editor, first);
+        let first_end = editor.cursor();
+        move_to(&mut editor, Direction::Right);
+        let second_start = editor.cursor();
+        assert_ne!(second_start.row, first_end.row);
+        assert!(!editor.at_root(), "{expected}: skipped the second slot");
+        // Restore an unfinished structure before completing its second slot.
+        let before = editor.draft().unwrap();
+        let mut editor = Editor::from_draft(&before).unwrap();
+        insert(&mut editor, second);
+        assert_eq!(editor.latex().unwrap(), expected);
+        let second_end = editor.cursor();
+        let filled = editor.draft().unwrap();
+        editor.apply(Action::Undo).unwrap();
+        assert_eq!(editor.draft().unwrap(), before);
+        editor.apply(Action::Redo).unwrap();
+        assert_eq!(editor.draft().unwrap(), filled);
+
+        editor.apply(Action::Home(false)).unwrap();
+        move_to(&mut editor, Direction::Left);
+        assert_eq!(editor.cursor(), first_end);
+        editor.apply(Action::Home(false)).unwrap();
+        move_to(&mut editor, Direction::Left);
+        assert!(editor.at_root());
+        assert_eq!(editor.cursor().offset, 0);
+        move_to(&mut editor, Direction::Right);
+        assert_eq!(
+            editor.cursor(),
+            Position {
+                row: first_end.row,
+                offset: 0
+            }
+        );
+        editor.apply(Action::End(false)).unwrap();
+        move_to(&mut editor, Direction::Right);
+        assert_eq!(editor.cursor(), second_start);
+        editor.apply(Action::End(false)).unwrap();
+        move_to(&mut editor, Direction::Right);
+        assert!(editor.at_root());
+        move_to(&mut editor, Direction::Left);
+        assert_eq!(editor.cursor(), second_end);
+
+        editor.apply(Action::Home(false)).unwrap();
+        editor.apply(Action::Move(Direction::Left, true)).unwrap();
+        assert_eq!(editor.copy_latex(), expected);
+        let selected = editor.draft().unwrap();
+        insert(&mut editor, "z");
+        assert_eq!(editor.latex().unwrap(), "z");
+        editor.apply(Action::Undo).unwrap();
+        assert_eq!(editor.draft().unwrap(), selected);
+    }
+}
+
+#[test]
+fn root_and_operator_exit_commands_leave_the_whole_structure() {
+    for template in [Template::IndexedRoot, Template::Sum, Template::Integral] {
+        for direction in [Direction::Left, Direction::Right] {
+            let mut editor = Editor::new();
+            editor.import_latex(r"\left(\right)").unwrap();
+            move_to(&mut editor, Direction::Left);
+            let parent = editor.cursor();
+            editor.apply(Action::Template(template.clone())).unwrap();
+            editor.apply(Action::Escape(direction)).unwrap();
+            assert_eq!(
+                editor.cursor(),
+                Position {
+                    row: parent.row,
+                    offset: usize::from(direction == Direction::Right),
+                }
+            );
+            assert!(!editor.at_root(), "only leave the inner structure");
+        }
+    }
+}
+
+#[test]
 fn common_latex_structures_and_symbols_canonicalize_without_losing_content() {
     let corpus = [
         r"\lim_{x\to0}\frac{\sin x}{x}",

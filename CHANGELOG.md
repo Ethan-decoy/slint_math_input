@@ -6,6 +6,17 @@ All notable user-facing changes are recorded here, following
 
 ## [Unreleased]
 
+### Fixed
+
+- Give base-logarithm templates a separate parenthesized argument, capture
+  selected expressions inside it, and advance from the base into the argument
+  with Right, Tab, Escape or the keypad's exit command.
+- Make keypad power/subscript buttons switch to the same base's opposite script
+  at the end of a script, matching typed `^` and `_` shortcuts.
+- Keep logarithm argument navigation working when an exponent is present.
+- Traverse indexed-root degree/body slots and operator lower/upper bounds in
+  both directions with Left/Right.
+
 ## [0.1.0-preview.4] - 2026-11-06
 
 ### Fixed

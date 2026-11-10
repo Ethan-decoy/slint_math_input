@@ -12,16 +12,17 @@ and accessibility verification listed below.
 | --- | --- | --- | --- |
 | Numbers, variables, operators | Direct typing; `*` becomes a centered dot; `<=`, `>=`, `!=` combine | Unicode and the supported named operators | Editing, deletion, rendering, drafts |
 | Fractions | `/` captures the selection or the term immediately to the left; an empty capture enters the numerator, otherwise the denominator | `\frac`, `\dfrac`, `\tfrac` | Incomplete draft, term capture, arrows, boundary deletion, pointer |
-| Roots | `sqrt`, `√`, square-root or indexed-root template | `\sqrt{x}`, `\sqrt[n]{x}` | Round trip, nested layout, draft |
-| Superscripts and subscripts | `^`, `_`, templates; a preceding base is required for typing | `x^{2}`, `x_{n}`, combined scripts | Scope, negative exponents, existing scripts, undo |
+| Roots | `sqrt`, `√`, square-root or indexed-root template | `\sqrt{x}`, `\sqrt[n]{x}` | Round trip, nested layout, draft, degree/body navigation in both directions |
+| Superscripts and subscripts | `^`, `_`, templates; a preceding base is required for typing | `x^{2}`, `x_{n}`, combined scripts | Scope, negative exponents, existing scripts, keyboard/keypad agreement, undo |
 | Square | `a²` keypad key or `Template::Square` wraps the preceding atom or selection and returns to its parent row | Grouped base and `^{2}` | Selection, one-step undo, mouse input, continuing on the baseline |
 | Limits | Catalog templates for `lim`, `limsup`, `liminf`, `sup`, `inf`; editable condition centered below the name | Standard operator commands, `\limits`, `\nolimits`, starred `\operatorname` | Real mouse entry, condition editing, geometry, drafts and canonical round trip |
+| Base logarithms | `logₐ` catalog template; editable base and paired argument parentheses | `\log_{b}\left(x\right)`; bare `\log_{b}` remains importable | Base/exponent-to-argument navigation, selection capture, pointer/keyboard input, history and drafts |
 | Derivatives | Ordinary/partial, first/second order catalog templates; `Template::Derivative` accepts orders 1–16 and pre-fills x | Editable fractions and scripts | Selected-expression capture, undo and round trip; variables/orders are editable notation, without differentiation or linked-field semantics |
 | Binomial coefficients | Two editable arguments; arrows traverse both | `\binom`, `\dbinom`, `\tbinom` | Navigation, selection, unwrap preservation, drafts and round trip |
 | Parentheses, brackets, braces, absolute value | Automatic partner; ghost delimiter remains until completed; opening can capture the right-hand tail | `\left`/`\right`, including `.` for an unfinished side | Capturing, closing in the middle, right-first completion, draft |
 | Floor, ceiling, norm, angle brackets | Scalable paired templates and explicit closing keys | Named delimiters, with or without `\left`/`\right` | Nested fractions, ghost drafts, canonical exchange and rendering |
 | Functions and Greek symbols | Automatic names such as `sin`, `sinh`, `arcsin`, `log`, `pi`, `theta`; Unicode also accepted | Named functions and supported Greek/operator commands; `\operatorname{custom}` | Conversion, longest function name, round trip |
-| Large operators | Sums/products, definite/indefinite/contour/multiple integrals, big unions/intersections; optional bounds | `\sum`, `\prod`, `\int`, `\oint`, `\iint`, `\iiint`, `\bigcup`, `\bigcap`, `\coprod`, `\bigoplus`, `\bigotimes` | Optional bounds, side integral limits, centered sum limits, explicit placement, drafts and exchange |
+| Large operators | Sums/products, definite/indefinite/contour/multiple integrals, big unions/intersections; optional bounds | `\sum`, `\prod`, `\int`, `\oint`, `\iint`, `\iiint`, `\bigcup`, `\bigcap`, `\coprod`, `\bigoplus`, `\bigotimes` | Optional bounds, lower/upper navigation in both directions, side integral limits, centered sum limits, explicit placement, drafts and exchange |
 | Lists, sets, piecewise notation | Grouped inline forms or a two-column piecewise template | Delimiters and `cases` | Branch and condition cells align on the left; row resizing, drafts and round trip |
 | Rectangular matrices and aligned equations | 1–16 rows/columns; several frames, row/column vectors and resize actions | `matrix`, `pmatrix`, `bmatrix`, `Bmatrix`, `vmatrix`, `Vmatrix`, `aligned`, `gathered`; `\substack` normalizes to a plain matrix | Cell navigation, dimensions, frame preservation and round trip; shrinking nonempty cells is rejected |
 | Accents and annotations | Hat, bar, underline, vector, dot, double dot, tilde, braces, annotations above/below a base | `\hat`, `\widehat`, `\bar`, `\overline`, `\underline`, `\vec`, `\overrightarrow`, `\dot`, `\ddot`, `\tilde`, `\widetilde`, `\overbrace`, `\underbrace`, `\overset`, `\underset`, `\stackrel` | Editable children, annotation content, centered brace labels, drafts and round trip |
@@ -50,6 +51,12 @@ meaning. A syntactically exportable expression may still be mathematically inval
   reaches the numerator. Up/down moves directly between rows, retaining the
   preferred horizontal coordinate. This replaces an earlier assumption based on
   the old MathQuill `leftRightIntoCmdGoes = 'up'` example.
+- Left/right also traverse an indexed root's degree and body, or a bounded
+  operator's lower and upper bounds, in that order. Right at the first slot's end
+  enters the second; Left at the second slot's beginning returns to the first.
+  Entering the structure from outside reaches the first slot from the left and
+  the second slot from the right. Tab, Escape and the keypad's exit command leave
+  the containing structure directly.
 - Shift extends selection. A selection crossing structural boundaries expands to
   whole atoms in the nearest shared row. Rendering, replacement and clipboard
   export use that same normalized selection.
@@ -63,6 +70,16 @@ meaning. A syntactically exportable expression may still be mathematically inval
   limit conditions and brace annotations also retain their scope. At the end of a
   subscript, `^` enters the same base's superscript, and conversely `_` after a
   superscript enters its subscript; `x_1^2` and `x^2_1` produce the same structure.
+  The keypad's power and subscript buttons follow the same rule. Within a row or
+  with a selection, those actions continue editing inside the active script.
+- The `logₐ` template starts in its base and includes a separate parenthesized
+  argument. At the base's end, Right enters that argument; Tab, Escape and the
+  keypad's exit command also advance from the base to the argument. Leaving the
+  argument returns to the parent row, where an operator starts the next term.
+  When the logarithm also has an exponent, advancing from either its base or
+  exponent enters the argument in the same way.
+  A selected expression becomes the argument when the template is inserted.
+  Both the base and the argument must be filled for strict LaTeX export.
 - Tab or Escape exits the current structure; Shift exits toward its left. At the
   root these keys are returned to the host. Home/End move within the current row;
   Ctrl/Cmd+Home/End move to document boundaries. Ctrl/Cmd+Backspace/Delete delete
@@ -95,6 +112,36 @@ meaning. A syntactically exportable expression may still be mathematically inval
 - Consecutive Up/Down moves retain a preferred horizontal column. Successful edits,
   import/paste, Home/End, and structure exits reset it to the new caret position.
   Rejected edits preserve both the document and the previous navigation target.
+
+## Editing workflow verification
+
+[The fixed workflow suite](../tests/workflows.rs) checks 18 editing tasks:
+fractions, nested roots/scripts, logarithms, functions, limits, bounded operators,
+binomials, matrices, piecewise expressions, selection wrapping and derivatives.
+Each task has an explicit expected formula. The suite compares core actions with
+controller text/keypad input at each step, resumes from every draft checkpoint,
+and checks editing history, nested scope and clipboard insertion.
+
+Additional checks cover boundary deletion in six structure families and pointer
+re-entry between unambiguous atoms in 14 formulas at font sizes 18, 32 and 60.
+Shared visual boundaries are covered by the separate ownership regressions in
+[script input](../tests/script_input.rs). The seeded operation replay in
+[editing](../tests/editing.rs) checks 6,000 actions, including rejected edits and
+matrix resizing, for document validity, atomic failure and restorable drafts.
+
+These tests run automatically with the normal `cargo test --locked --all-features`
+and `cargo test --locked --no-default-features` checks. To run only the fixed suite:
+
+```sh
+cargo test --locked --test workflows
+cargo test --locked --no-default-features --test workflows
+```
+
+[The independent host test](../tests/embedding.rs) also dispatches actual Slint
+keyboard and pointer events through an offscreen window at scale factors 1 and 2.
+It covers logarithm arguments, mixed script input, indexed roots, bounded operators
+and matrix cell navigation while keeping a second input instance isolated. This is
+a defined automated acceptance set; the native desktop checks below remain separate.
 
 ## Drafts and LaTeX
 

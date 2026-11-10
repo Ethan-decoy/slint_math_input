@@ -214,7 +214,6 @@ fn pointer_uses_the_rendered_fraction_geometry_at_multiple_sizes() {
 
 #[test]
 fn operation_replay_preserves_invariants_and_serialization() {
-    let mut editor = Editor::new();
     let operations = [
         Action::Insert("x".into()),
         Action::Insert("1/".into()),
@@ -231,20 +230,67 @@ fn operation_replay_preserves_invariants_and_serialization() {
         Action::End(true),
         Action::Template(Template::Root),
         Action::Template(Template::Power),
+        Action::Template(Template::Subscript),
+        Action::Template(Template::IndexedRoot),
+        Action::Template(Template::LogBase),
+        Action::Template(Template::Limit("lim".into())),
+        Action::Template(Template::Sum),
+        Action::Template(Template::Binomial),
+        Action::Template(Template::Matrix {
+            rows: 2,
+            columns: 2,
+        }),
+        Action::Function("sin".into()),
+        Action::SelectAll,
+        Action::RootHome(false),
+        Action::RootEnd(true),
+        Action::Escape(Direction::Left),
+        Action::Escape(Direction::Right),
+        Action::DeleteToBoundary(Direction::Left),
+        Action::DeleteToBoundary(Direction::Right),
+        Action::ResizeMatrix {
+            row_delta: 1,
+            column_delta: 0,
+        },
+        Action::ResizeMatrix {
+            row_delta: 0,
+            column_delta: -1,
+        },
         Action::Insert("(a)".into()),
+        Action::Insert("b^2_1".into()),
+        Action::Insert(")".into()),
+        Action::Insert("\u{0}".into()),
         Action::Clear,
     ];
-    let mut random = 741_u64;
-    for step in 0..1500 {
-        random = random.wrapping_mul(6364136223846793005).wrapping_add(1);
-        let operation = operations[(random >> 32) as usize % operations.len()].clone();
-        let _ = editor.apply(operation);
-        editor
-            .validate()
-            .unwrap_or_else(|e| panic!("step {step}: {e}"));
-        if step % 50 == 0 {
-            let draft = editor.draft().unwrap();
-            assert_eq!(Editor::from_draft(&draft).unwrap().draft().unwrap(), draft);
+    for (seed, source) in [
+        (741_u64, ""),
+        (19, r"\log_{b}^{2}\left(\frac{x}{y}\right)"),
+        (836, r"\begin{bmatrix}1&2\\3&4\end{bmatrix}"),
+        (2026, r"\sqrt[3]{x^{2}+1}"),
+    ] {
+        let mut editor = Editor::new();
+        editor.import_latex(source).unwrap();
+        let mut random = seed;
+        for step in 0..1500 {
+            random = random.wrapping_mul(6364136223846793005).wrapping_add(1);
+            let operation = operations[(random >> 32) as usize % operations.len()].clone();
+            let before = editor.draft().unwrap();
+            let history = (editor.can_undo(), editor.can_redo());
+            if editor.apply(operation.clone()).is_err() {
+                assert_eq!(
+                    editor.draft().unwrap(),
+                    before,
+                    "seed {seed}, step {step}, {operation:?}"
+                );
+                assert_eq!((editor.can_undo(), editor.can_redo()), history);
+            }
+            editor
+                .validate()
+                .unwrap_or_else(|e| panic!("seed {seed}, step {step}, {operation:?}: {e}"));
+            if step % 25 == 0 {
+                let draft = editor.draft().unwrap();
+                assert_eq!(Editor::from_draft(&draft).unwrap().draft().unwrap(), draft);
+            }
         }
     }
 }

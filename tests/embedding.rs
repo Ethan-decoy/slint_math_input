@@ -211,6 +211,116 @@ fn separate_host_instances_keep_focus_history_and_pointer_coordinates_independen
         ui.window().dispatch_event(WindowEvent::Resized {
             size: slint::LogicalSize::new(800.0, 200.0),
         });
+        // Follow the log-base insertion with actual keyboard/pointer dispatch.
+        for (base_text, expected) in [
+            ("b", r"\log_{b}\left(x\right)"),
+            ("b^2", r"\log_{b}^{2}\left(x\right)"),
+        ] {
+            for navigation in ["right", "tab", "pointer"] {
+                let (base, target) = {
+                    let mut state = second.borrow_mut();
+                    state.editor.apply(Action::Clear).unwrap();
+                    state.keypad("catalog:log-base", false);
+                    state.insert(base_text);
+                    let base = state.editor.cursor();
+                    state.keypad("key:next", false);
+                    let target = state.editor.cursor();
+                    state.editor.set_position(base, false).unwrap();
+                    (base, target)
+                };
+                ui.set_second_view(view(second.borrow().view(scale).unwrap()));
+                ui.invoke_focus_second();
+                if navigation == "pointer" {
+                    let geometry = second.borrow().editor.layout();
+                    let caret = geometry.caret(target).unwrap().rect;
+                    let point = slint::LogicalPosition::new(
+                        412.0 + caret.x,
+                        (200.0 - geometry.height) / 2.0 + caret.y + caret.height * 0.5,
+                    );
+                    ui.window().dispatch_event(WindowEvent::PointerPressed {
+                        position: point,
+                        button: PointerEventButton::Left,
+                    });
+                    ui.window().dispatch_event(WindowEvent::PointerReleased {
+                        position: point,
+                        button: PointerEventButton::Left,
+                    });
+                } else {
+                    key(
+                        &ui,
+                        if navigation == "right" {
+                            SharedString::from(slint::platform::Key::RightArrow)
+                        } else {
+                            SharedString::from(slint::platform::Key::Tab)
+                        },
+                    );
+                }
+                assert_ne!(second.borrow().editor.cursor().row, base.row);
+                key(&ui, "x");
+                assert_eq!(
+                    second.borrow().editor.latex().unwrap(),
+                    expected,
+                    "{base_text}, {navigation}, scale {scale}"
+                );
+                assert_eq!(first.borrow().editor.latex().unwrap(), "x^{2}");
+            }
+        }
+        // Mix native text/arrow events with host-dispatched keypad templates.
+        for (token, slots, expected) in [
+            ("key:indexed-root", &["3", "x"][..], r"\sqrt[3]{x}"),
+            ("key:sum", &["1", "10", "x"][..], r"\sum_{n=1}^{10} x"),
+            ("key:integral", &["0", "1", "x"][..], r"\int_{0}^{1} x"),
+            (
+                "key:matrix",
+                &["1", "2", "3", "4"][..],
+                r"\begin{bmatrix}1&2\\3&4\end{bmatrix}",
+            ),
+        ] {
+            {
+                let mut state = second.borrow_mut();
+                state.editor.apply(Action::Clear).unwrap();
+                state.keypad(token, false);
+            }
+            ui.set_second_view(view(second.borrow().view(scale).unwrap()));
+            ui.invoke_focus_second();
+            for slot in slots {
+                for ch in slot.chars() {
+                    key(&ui, ch.to_string());
+                }
+                key(&ui, slint::platform::Key::RightArrow);
+            }
+            for ch in "+z".chars() {
+                key(&ui, ch.to_string());
+            }
+            assert_eq!(
+                second.borrow().editor.latex().unwrap(),
+                format!("{expected}+z"),
+                "{token}, scale {scale}"
+            );
+            assert_eq!(first.borrow().editor.latex().unwrap(), "x^{2}");
+        }
+        for (prefix, token, suffix) in [("x_1", "key:power", "2"), ("x^2", "key:subscript", "1")] {
+            second.borrow_mut().editor.apply(Action::Clear).unwrap();
+            ui.set_second_view(view(second.borrow().view(scale).unwrap()));
+            ui.invoke_focus_second();
+            for ch in prefix.chars() {
+                key(&ui, ch.to_string());
+            }
+            second.borrow_mut().keypad(token, false);
+            ui.set_second_view(view(second.borrow().view(scale).unwrap()));
+            ui.invoke_focus_second();
+            key(&ui, suffix);
+            key(&ui, slint::platform::Key::RightArrow);
+            for ch in "+z".chars() {
+                key(&ui, ch.to_string());
+            }
+            assert_eq!(
+                second.borrow().editor.latex().unwrap(),
+                "x_{1}^{2}+z",
+                "{prefix}, {token}, scale {scale}"
+            );
+            assert_eq!(first.borrow().editor.latex().unwrap(), "x^{2}");
+        }
         for (source, dx, expected) in [
             (r"\log_{b}\left(x\right)", 1.0, r"y\log_{b}\left(x\right)"),
             (r"\mathbf{x}_{n}", 1.0, r"y\mathbf{x}_{n}"),

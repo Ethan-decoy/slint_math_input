@@ -56,7 +56,7 @@ pub enum Template {
     Integral,
     /// An upright limit operator with an editable condition below it.
     Limit(String),
-    /// A logarithm with an editable base.
+    /// A logarithm with an editable base and a parenthesized argument.
     LogBase,
     /// A differential operator with an editable denominator; order is in 1..=16.
     Derivative {
@@ -744,11 +744,16 @@ impl Editor {
                     return Err(Error::new("Escape requires a left or right direction"));
                 }
                 if let Some((row, index)) = self.state.root.parent(self.state.cursor.row) {
+                    let argument = if direction == Direction::Right {
+                        self.logarithm_argument(row, index, self.state.cursor.row)
+                    } else {
+                        None
+                    };
                     self.move_to(
-                        Position {
+                        argument.unwrap_or(Position {
                             row,
                             offset: index + usize::from(direction == Direction::Right),
-                        },
+                        }),
                         false,
                     );
                 }
@@ -800,25 +805,6 @@ impl Editor {
         Ok(())
     }
     fn type_char(&mut self, ch: char) -> Result<(), Error> {
-        if matches!(ch, '^' | '_')
-            && self.selection_range().is_none()
-            && self.state.cursor.offset == self.current().nodes.len()
-            && let Some((parent, index)) = self.state.root.parent(self.state.cursor.row)
-            && let Node::Script { sub, sup, .. } = &self.row(parent).nodes[index]
-            && ((ch == '^'
-                && sub
-                    .as_ref()
-                    .is_some_and(|row| row.id == self.state.cursor.row))
-                || (ch == '_'
-                    && sup
-                        .as_ref()
-                        .is_some_and(|row| row.id == self.state.cursor.row)))
-        {
-            self.state.cursor = Position {
-                row: parent,
-                offset: index + 1,
-            };
-        }
         match ch {
             '/' => return self.template(Template::Fraction),
             '^' => return self.template(Template::Power),
@@ -1130,7 +1116,14 @@ impl Editor {
                 let base = self.new_row(vec![Node::Function { name: "log".into() }]);
                 let sub = self.new_row(vec![]);
                 let target = sub.id;
-                trailing = selected;
+                let body = self.new_row(selected);
+                trailing = vec![Node::Group {
+                    open: '(',
+                    close: ')',
+                    body,
+                    closed: true,
+                    ghost_open: false,
+                }];
                 (
                     Node::Script {
                         placement: Default::default(),
@@ -1275,6 +1268,24 @@ impl Editor {
             }
             Template::Power | Template::Subscript => {
                 let upper = matches!(template, Template::Power);
+                // Typed shortcuts and keypad templates share the same switch
+                // from the end of one script into the other on its original base.
+                if !has_selection
+                    && self.state.cursor.offset == self.current().nodes.len()
+                    && let Some((parent, index)) = self.state.root.parent(self.state.cursor.row)
+                    && let Node::Script { sub, sup, .. } = &self.row(parent).nodes[index]
+                    && (if upper { sub } else { sup })
+                        .as_ref()
+                        .is_some_and(|row| row.id == self.state.cursor.row)
+                {
+                    self.move_to(
+                        Position {
+                            row: parent,
+                            offset: index + 1,
+                        },
+                        false,
+                    );
+                }
                 let at = self.state.cursor.offset;
                 if at == 0 && !has_selection {
                     return Ok(());
@@ -1536,6 +1547,56 @@ impl Editor {
             "Place the cursor in a matrix or piecewise expression first",
         ))
     }
+    // Keep entry and boundary traversal in the same order for two-slot structures.
+    fn horizontal_slots(node: &Node) -> Option<(&Row, &Row)> {
+        match node {
+            Node::Fraction {
+                numerator: first,
+                denominator: second,
+            }
+            | Node::Binomial {
+                upper: first,
+                lower: second,
+            }
+            | Node::Root {
+                index: Some(first),
+                body: second,
+            }
+            | Node::Large {
+                lower: Some(first),
+                upper: Some(second),
+                ..
+            } => Some((first, second)),
+            _ => None,
+        }
+    }
+    // Keep logarithms as existing script/group nodes so drafts and LaTeX share
+    // the same structure. Advancing from either script enters its adjacent argument.
+    fn logarithm_argument(&self, parent: u64, index: usize, child: u64) -> Option<Position> {
+        let nodes = &self.row(parent).nodes;
+        if let Node::Script {
+            base,
+            sub: Some(sub),
+            sup,
+            ..
+        } = &nodes[index]
+            && (sub.id == child || sup.as_ref().is_some_and(|row| row.id == child))
+            && matches!(base.nodes.as_slice(), [Node::Function { name }] if name == "log")
+            && let Some(Node::Group {
+                open: '(',
+                close: ')',
+                body,
+                ..
+            }) = nodes.get(index + 1)
+        {
+            Some(Position {
+                row: body.id,
+                offset: 0,
+            })
+        } else {
+            None
+        }
+    }
     fn move_direction(&mut self, direction: Direction, extend: bool) {
         if matches!(direction, Direction::Up | Direction::Down) {
             let layout = self.layout();
@@ -1658,16 +1719,8 @@ impl Editor {
         };
         if (right && cursor.offset < self.current().nodes.len()) || (!right && cursor.offset > 0) {
             let node = &self.current().nodes[index];
-            let entry = if let Node::Fraction {
-                numerator,
-                denominator,
-            }
-            | Node::Binomial {
-                upper: numerator,
-                lower: denominator,
-            } = node
-            {
-                Some(if right { numerator } else { denominator })
+            let entry = if let Some((first, second)) = Self::horizontal_slots(node) {
+                Some(if right { first } else { second })
             } else if let Node::Matrix { cells, .. } = node {
                 if right {
                     cells.first().and_then(|r| r.first())
@@ -1701,25 +1754,16 @@ impl Editor {
                 row: parent,
                 offset: node_index + usize::from(right),
             };
-            if !extend
-                && let Node::Fraction {
-                    numerator,
-                    denominator,
-                }
-                | Node::Binomial {
-                    upper: numerator,
-                    lower: denominator,
-                } = node
-            {
-                if right && cursor.row == numerator.id {
+            if !extend && let Some((first, second)) = Self::horizontal_slots(node) {
+                if right && cursor.row == first.id {
                     target = Position {
-                        row: denominator.id,
+                        row: second.id,
                         offset: 0,
                     };
-                } else if !right && cursor.row == denominator.id {
+                } else if !right && cursor.row == second.id {
                     target = Position {
-                        row: numerator.id,
-                        offset: numerator.nodes.len(),
+                        row: first.id,
+                        offset: first.nodes.len(),
                     };
                 }
             }
@@ -1766,6 +1810,12 @@ impl Editor {
                         offset: base.nodes.len(),
                     };
                 }
+            }
+            if right
+                && !extend
+                && let Some(argument) = self.logarithm_argument(parent, node_index, cursor.row)
+            {
+                target = argument;
             }
             self.move_to(target, extend);
         }
