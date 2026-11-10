@@ -6,6 +6,17 @@ All notable user-facing changes are recorded here, following
 
 ## [Unreleased]
 
+## [0.1.0-preview.5] - 2026-11-10
+
+### Added
+
+- Opt-in `Editor::structured_typing` for editable typed logarithm/limit templates,
+  reversible shortcut expansion and natural root-call parentheses. Existing
+  hosts retain their default typing behavior and the draft schema is unchanged.
+- `Action::NextField` and `catalog::is_typing_command` for host integrations;
+  the Slint controller uses Tab/Shift+Tab for fields and Space to exit a scope
+  when the new typing policy is enabled.
+
 ### Fixed
 
 - Give base-logarithm templates a separate parenthesized argument, capture
@@ -83,7 +94,8 @@ The public Rust interfaces and version-1 draft format remain compatible.
 This is a GitHub source preview, not a crates.io publication. See the
 [support table](docs/support.md) for verified behavior and remaining native checks.
 
-[Unreleased]: https://github.com/Ethan-decoy/slint_math_input/compare/v0.1.0-preview.4...HEAD
+[Unreleased]: https://github.com/Ethan-decoy/slint_math_input/compare/v0.1.0-preview.5...HEAD
+[0.1.0-preview.5]: https://github.com/Ethan-decoy/slint_math_input/compare/v0.1.0-preview.4...v0.1.0-preview.5
 [0.1.0-preview.4]: https://github.com/Ethan-decoy/slint_math_input/compare/v0.1.0-preview.2...v0.1.0-preview.4
 [0.1.0-preview.2]: https://github.com/Ethan-decoy/slint_math_input/compare/v0.1.0-preview.1...v0.1.0-preview.2
 [0.1.0-preview.1]: https://github.com/Ethan-decoy/slint_math_input/releases/tag/v0.1.0-preview.1

@@ -4,6 +4,8 @@ use crate::{
 };
 use serde::{Deserialize, Serialize};
 
+mod structured_input;
+
 /// A stable row identifier and a boundary between its atoms.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -131,6 +133,8 @@ pub enum Action {
     End(bool),
     /// Exit the containing structure toward the left or right.
     Escape(Direction),
+    /// Visit the next editable field, or the previous one when true.
+    NextField(bool),
     /// Delete from the cursor to the beginning or end of its current row.
     DeleteToBoundary(Direction),
     /// Move to the document beginning, optionally extending selection.
@@ -175,6 +179,12 @@ pub struct Editor {
     undo: Vec<State>,
     redo: Vec<State>,
     preferred_x: Option<f32>,
+    pending_log: Option<(u64, bool)>,
+    shortcut_barrier: Option<Position>,
+    shortcut_source: Option<State>,
+    /// Opt into typed logarithm/limit templates, field navigation and reversible
+    /// shortcut expansion. Disabled by default for existing host integrations.
+    pub structured_typing: bool,
     /// Base font size used for geometric keyboard navigation, in logical pixels.
     pub font_size: f32,
 }
@@ -188,7 +198,12 @@ impl Editor {
     pub fn insert_catalog(&mut self, id: &str) -> Result<(), Error> {
         let entry = catalog::entry(id)
             .ok_or_else(|| Error::new(format!("Unknown mathematical catalog item: {id}")))?;
-        self.apply(entry.action.clone())
+        let action = if self.structured_typing && id == "fn-log" {
+            Action::Template(Template::LogBase)
+        } else {
+            entry.action.clone()
+        };
+        self.apply(action)
     }
     /// Create an empty expression.
     pub fn new() -> Self {
@@ -205,6 +220,10 @@ impl Editor {
             undo: vec![],
             redo: vec![],
             preferred_x: None,
+            pending_log: None,
+            shortcut_barrier: None,
+            shortcut_source: None,
+            structured_typing: false,
             font_size: 32.0,
         }
     }
@@ -272,6 +291,8 @@ impl Editor {
         };
         self.validate()?;
         self.preferred_x = None;
+        self.pending_log = None;
+        self.shortcut_barrier = None;
         self.record(before);
         Ok(())
     }
@@ -288,11 +309,16 @@ impl Editor {
             self.state.next_id = next_id;
             self.remove_selection();
             self.splice(row.nodes);
+            if self.structured_typing {
+                self.confirm_log_argument();
+            }
             if let Err(error) = self.validate() {
                 self.state = before;
                 return Err(error);
             }
             self.preferred_x = None;
+            self.pending_log = None;
+            self.shortcut_barrier = None;
             self.record(before);
             Ok(())
         } else {
@@ -366,6 +392,8 @@ impl Editor {
         let incoming = Self::from_draft(source)?;
         let before = self.state.clone();
         self.state = incoming.state;
+        self.pending_log = None;
+        self.shortcut_barrier = None;
         self.record(before);
         self.preferred_x = None;
         Ok(())
@@ -514,10 +542,18 @@ impl Editor {
         }
         self.move_to(position, extend);
         self.preferred_x = None;
+        self.pending_log = None;
+        self.shortcut_barrier = None;
         Ok(())
     }
     /// Apply one operation atomically, recording content changes for undo.
     pub fn apply(&mut self, action: Action) -> Result<(), Error> {
+        let input_state = (self.pending_log, self.shortcut_barrier);
+        self.shortcut_source = None;
+        if !matches!(action, Action::Insert(_)) {
+            self.pending_log = None;
+            self.shortcut_barrier = None;
+        }
         if matches!(action, Action::Undo) {
             if let Some(state) = self.undo.pop() {
                 self.redo.push(std::mem::replace(&mut self.state, state));
@@ -535,8 +571,15 @@ impl Editor {
         let vertical_move = matches!(action, Action::Move(Direction::Up | Direction::Down, _));
         let preferred_x = self.preferred_x;
         let before = self.state.clone();
-        if let Err(error) = self.apply_inner(action).and_then(|()| self.validate()) {
+        if let Err(error) = self.apply_inner(action).and_then(|()| {
+            if self.structured_typing {
+                self.confirm_log_argument();
+            }
+            self.validate()
+        }) {
             self.state = before;
+            (self.pending_log, self.shortcut_barrier) = input_state;
+            self.shortcut_source = None;
             self.preferred_x = preferred_x;
             return Err(error);
         }
@@ -545,6 +588,9 @@ impl Editor {
             self.preferred_x = None;
         }
         self.record(before);
+        if let Some(raw) = self.shortcut_source.take() {
+            self.record(raw);
+        }
         Ok(())
     }
     /// Check structural and cursor invariants; useful in operation replays.
@@ -739,6 +785,8 @@ impl Editor {
                 },
                 extend,
             ),
+            Action::NextField(backward) => self.next_field(backward),
+            Action::Escape(direction) if self.structured_typing => self.exit_scope(direction)?,
             Action::Escape(direction) => {
                 if matches!(direction, Direction::Up | Direction::Down) {
                     return Err(Error::new("Escape requires a left or right direction"));
@@ -805,6 +853,10 @@ impl Editor {
         Ok(())
     }
     fn type_char(&mut self, ch: char) -> Result<(), Error> {
+        self.shortcut_source = None;
+        if self.structured_typing && self.log_input(ch)? {
+            return Ok(());
+        }
         match ch {
             '/' => return self.template(Template::Fraction),
             '^' => return self.template(Template::Power),
@@ -836,13 +888,23 @@ impl Editor {
             }
             ')' | ']' | '}' | '⌋' | '⌉' | '⟩' => {
                 if self.selection_range().is_none() && self.close_group(ch) {
+                    if self.structured_typing && ch == ')' {
+                        self.finish_root_call();
+                    }
                     return Ok(());
                 }
                 self.open_from_right(ch);
                 return Ok(());
             }
             ' ' => {
-                self.move_direction(Direction::Right, false);
+                if self.structured_typing {
+                    self.exit_scope(Direction::Right)?;
+                } else {
+                    self.move_direction(Direction::Right, false);
+                }
+                if self.structured_typing {
+                    self.shortcut_barrier = Some(self.state.cursor);
+                }
                 return Ok(());
             }
             '√' => return self.template(Template::Root),
@@ -898,7 +960,12 @@ impl Editor {
         }
         let end = self.state.cursor.offset;
         let mut start = end;
-        while start > 0 && letters(&self.current().nodes[start - 1]).is_some() {
+        while start > 0
+            && letters(&self.current().nodes[start - 1]).is_some()
+            && self.shortcut_barrier.is_none_or(|barrier| {
+                barrier.row != self.state.cursor.row || start > barrier.offset
+            })
+        {
             start -= 1;
         }
         let mut word = String::new();
@@ -922,13 +989,11 @@ impl Editor {
                     && boundary(name).is_some()
             })
             .max_by_key(|(name, _)| name.len());
-        let structural = [
-            "sqrt", "nthroot", "frac", "binom", "ddx", "pdiff", "hat", "bar", "vec",
-        ]
-        .into_iter()
-        .chain(crate::model::LARGE_OPERATORS.iter().map(|(name, _)| *name))
-        .filter(|name| boundary(name).is_some())
-        .max_by_key(|name| name.len());
+        let structural = boundaries
+            .iter()
+            .map(|(byte, _)| &word[*byte..])
+            .filter(|name| catalog::typing_template(name).is_some())
+            .max_by_key(|name| name.len());
         let function = catalog::function_names()
             .filter(|name| boundary(name).is_some())
             .max_by_key(|name| name.len());
@@ -944,6 +1009,9 @@ impl Editor {
             return Ok(());
         };
         let mut from = boundary(name).expect("matched token boundary");
+        if self.structured_typing {
+            self.shortcut_source = Some(self.state.clone());
+        }
         if from > 0 && self.current().nodes[from - 1].text() == Some("\\") {
             from -= 1;
         }
@@ -952,35 +1020,12 @@ impl Editor {
         if symbol.is_some_and(|(command, _)| *command == name) {
             self.splice(vec![Node::symbol(symbol.expect("matched symbol").1)]);
         } else if structural == Some(name) {
-            let template = match name {
-                "sqrt" => Template::Root,
-                "nthroot" => Template::IndexedRoot,
-                "frac" => Template::Fraction,
-                "binom" => Template::Binomial,
-                "ddx" => Template::Derivative {
-                    partial: false,
-                    order: 1,
-                },
-                "pdiff" => Template::Derivative {
-                    partial: true,
-                    order: 1,
-                },
-                "hat" => Template::Accent(Accent::Hat),
-                "bar" => Template::Accent(Accent::Bar),
-                "vec" => Template::Accent(Accent::Vector),
-                "sum" => Template::Sum,
-                "prod" => Template::Product,
-                "int" => Template::Integral,
-                _ => Template::LargeOperator {
-                    symbol: crate::model::LARGE_OPERATORS
-                        .iter()
-                        .find(|(command, _)| *command == name)
-                        .expect("matched operator")
-                        .1,
-                    bounded: true,
-                },
-            };
-            self.template(template)?;
+            self.template(catalog::typing_template(name).expect("matched structural shortcut"))?;
+        } else if self.structured_typing && name == "log" {
+            self.template(Template::LogBase)?;
+            self.pending_log = Some((self.state.cursor.row, false));
+        } else if self.structured_typing && name == "lim" {
+            self.template(Template::Limit(name.into()))?;
         } else {
             self.splice(vec![Node::Function { name: name.into() }]);
         }
@@ -1117,12 +1162,13 @@ impl Editor {
                 let sub = self.new_row(vec![]);
                 let target = sub.id;
                 let body = self.new_row(selected);
+                let ghost_open = self.structured_typing && body.nodes.is_empty();
                 trailing = vec![Node::Group {
                     open: '(',
                     close: ')',
                     body,
                     closed: true,
-                    ghost_open: false,
+                    ghost_open,
                 }];
                 (
                     Node::Script {

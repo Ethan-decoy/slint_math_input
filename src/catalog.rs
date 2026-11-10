@@ -35,6 +35,48 @@ pub fn entry(id: &str) -> Option<&'static CatalogEntry> {
     entries().iter().find(|entry| entry.id == id)
 }
 
+/// Whether a complete typed name invokes a built-in structure, function or symbol.
+/// Hosts can hand an unfinished command to the editor without maintaining a
+/// second shortcut vocabulary. Ordinary prose stays host-owned.
+pub fn is_typing_command(name: &str) -> bool {
+    name.chars().all(|ch| ch.is_ascii_alphabetic())
+        && (typing_template(name).is_some()
+            || function_names().any(|function| function == name)
+            || crate::model::SYMBOLS.iter().any(|(command, _)| {
+                *command == name && (name.len() >= 3 || matches!(name, "pi" | "mu" | "nu" | "xi"))
+            }))
+}
+
+pub(crate) fn typing_template(name: &str) -> Option<Template> {
+    Some(match name {
+        "sqrt" => Template::Root,
+        "nthroot" => Template::IndexedRoot,
+        "frac" => Template::Fraction,
+        "binom" => Template::Binomial,
+        "ddx" => Template::Derivative {
+            partial: false,
+            order: 1,
+        },
+        "pdiff" => Template::Derivative {
+            partial: true,
+            order: 1,
+        },
+        "hat" => Template::Accent(crate::Accent::Hat),
+        "bar" => Template::Accent(crate::Accent::Bar),
+        "vec" => Template::Accent(crate::Accent::Vector),
+        "sum" => Template::Sum,
+        "prod" => Template::Product,
+        "int" => Template::Integral,
+        _ => Template::LargeOperator {
+            symbol: crate::model::LARGE_OPERATORS
+                .iter()
+                .find(|(command, _)| *command == name)?
+                .1,
+            bounded: true,
+        },
+    })
+}
+
 pub(crate) fn function_names() -> impl Iterator<Item = &'static str> {
     entries().iter().filter_map(|entry| match &entry.action {
         Action::Function(name) | Action::Template(Template::Limit(name)) => Some(name.as_str()),

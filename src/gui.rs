@@ -142,11 +142,17 @@ impl MathInputController {
             }
             self.error = self
                 .editor
-                .apply(Action::Escape(if shift {
-                    Direction::Left
-                } else {
-                    Direction::Right
-                }))
+                .apply(
+                    if self.editor.structured_typing && text == char::from(Key::Tab).to_string() {
+                        Action::NextField(shift)
+                    } else {
+                        Action::Escape(if shift {
+                            Direction::Left
+                        } else {
+                            Direction::Right
+                        })
+                    },
+                )
                 .err();
             return true;
         }
@@ -240,6 +246,7 @@ impl MathInputController {
             "key:down" => Action::Move(Direction::Down, extend),
             "key:home" => Action::Home(extend),
             "key:end" => Action::End(extend),
+            "key:next" if self.editor.structured_typing => Action::NextField(false),
             "key:next" => Action::Escape(Direction::Right),
             "key:backspace" => Action::Backspace,
             "key:delete" => Action::Delete,

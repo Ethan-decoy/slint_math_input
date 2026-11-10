@@ -193,6 +193,27 @@ each `edited` event. The Rust document receives committed text, not a copy of th
 platform's preedit buffer. Do not independently feed key text to both the editor
 and TextInput, or committed text will be duplicated.
 
+## Optional continuous structure typing
+
+Set `controller.editor.structured_typing = true` to opt into typed `log` base/argument
+templates and `lim` conditions. Existing hosts retain the default behavior.
+`log(x)` omits an explicit base; `log_2(x)` and grouped bases remain supported.
+The logarithm catalog entries use the same construct as typing.
+
+In this mode Tab/Shift+Tab visit editable fields, while Space exits the containing
+structure. `Action::NextField(bool)` exposes field navigation to custom toolbars.
+Directions retain geometric navigation, and operators remain in scripts until
+the user moves out. Explicit parentheses in `sqrt(3)/2` delimit the root's argument.
+Undo immediately after a shortcut expansion restores its literal command.
+
+Use `catalog::is_typing_command()` when handing unfinished native text to SMI.
+Keep prose and application submission policy in the host. Draft content and caret
+positions retain their existing schema; configure the host's typing policy after
+creating an editor from a draft. Shortcut matching buffers are session-local.
+
+This opt-in behavior has software replay coverage; native input-method and
+assistive-technology validation remains subject to the support table below.
+
 ## Clipboard, threading and presentation
 
 `MathInputController::new` lazily opens the OS clipboard and keeps its handle
