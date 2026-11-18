@@ -46,6 +46,10 @@ meaning. A syntactically exportable expression may still be mathematically inval
 
 ## Interaction rules
 
+These rules describe the default typing mode. Hosts can opt into
+[continuous structure typing](embedding.md#optional-continuous-structure-typing)
+for field-by-field Tab navigation and explicit scope exit.
+
 - Left/right arrows traverse a fraction's numerator and denominator in document
   order. Entering from the right reaches the denominator; entering from the left
   reaches the numerator. Up/down moves directly between rows, retaining the
@@ -80,8 +84,8 @@ meaning. A syntactically exportable expression may still be mathematically inval
   exponent enters the argument in the same way.
   A selected expression becomes the argument when the template is inserted.
   Both the base and the argument must be filled for strict LaTeX export.
-- Tab or Escape exits the current structure; Shift exits toward its left. At the
-  root these keys are returned to the host. Home/End move within the current row;
+- Tab or Escape exits the current structure. Holding Shift exits to its left.
+  At the root these keys are returned to the host. Home/End move within the current row.
   Ctrl/Cmd+Home/End move to document boundaries. Ctrl/Cmd+Backspace/Delete delete
   to the current row boundary. There is no word-level Ctrl+arrow navigation yet.
 - Pointer placement and dragging use the same logical geometry as rendering.
@@ -126,8 +130,15 @@ Additional checks cover boundary deletion in six structure families and pointer
 re-entry between unambiguous atoms in 14 formulas at font sizes 18, 32 and 60.
 Shared visual boundaries are covered by the separate ownership regressions in
 [script input](../tests/script_input.rs). The seeded operation replay in
-[editing](../tests/editing.rs) checks 6,000 actions, including rejected edits and
-matrix resizing, for document validity, atomic failure and restorable drafts.
+[editing](../tests/editing.rs) checks 6,000 actions per typing mode, including
+rejected edits and matrix resizing, for document validity, atomic failure and
+restorable drafts.
+
+The [field navigation tests](../tests/field_navigation.rs) insert a marker to
+check the actual caret destination against an independent LaTeX expectation.
+They enumerate sequences of up to four field moves, insertions, undos and redos
+on logarithms, combined scripts and indexed roots in both modes. A failure
+reports the input sequence, expected formula and observed formula.
 
 These tests run automatically with the normal `cargo test --locked --all-features`
 and `cargo test --locked --no-default-features` checks. To run only the fixed suite:

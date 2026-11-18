@@ -1,5 +1,5 @@
 //! Opt-in continuous typing and field navigation. All edits stay in the editor tree.
-use super::{Direction, Editor, Error, Node, Position};
+use super::{Direction, Editor, Error, Node, Position, fields};
 
 impl Editor {
     fn row_mut(&mut self, id: u64) -> &mut super::Row {
@@ -20,25 +20,13 @@ impl Editor {
         let Some((parent, index)) = self.state.root.parent(self.state.cursor.row) else {
             return;
         };
-        if index == 0 {
-            return;
-        }
-        let nodes = &self.row(parent).nodes;
-        let is_log = match &nodes[index - 1] {
-            Node::Function { name } => name == "log",
-            Node::Script { base, .. } => {
-                matches!(base.nodes.as_slice(), [Node::Function { name }] if name == "log")
-            }
-            _ => false,
-        };
-        if is_log
+        if fields::Logarithm::ending_at(self.row(parent), index)
+            .is_some_and(|log| !log.argument.nodes.is_empty())
             && let Node::Group {
                 closed: true,
                 ghost_open,
-                body,
                 ..
             } = &mut self.row_mut(parent).nodes[index]
-            && !body.nodes.is_empty()
         {
             *ghost_open = false;
         }
@@ -48,54 +36,10 @@ impl Editor {
         let Some((parent, index)) = self.state.root.parent(child) else {
             return;
         };
-        let node = &self.row(parent).nodes[index];
-        let fields = match node {
-            Node::Script { sub, sup, .. } => sub.iter().chain(sup).collect::<Vec<_>>(),
-            _ => node.children(),
-        };
-        let next = fields
-            .iter()
-            .position(|field| field.id == child)
-            .and_then(|at| {
-                if backward {
-                    at.checked_sub(1)
-                } else {
-                    Some(at + 1)
-                }
-            })
-            .and_then(|at| fields.get(at))
-            .map(|field| Position {
-                row: field.id,
-                offset: if backward { field.nodes.len() } else { 0 },
-            });
-        let next = next.or_else(|| {
-            if !backward {
-                return self.logarithm_argument(parent, index, child);
-            }
-            // A logarithm's argument is a sibling group; return to its last
-            // script field without visiting the function-name atom.
-            if index > 0 && matches!(node, Node::Group { body, .. } if body.id == child) {
-                let previous = &self.row(parent).nodes[index - 1];
-                if let Node::Script { base, sub, sup, .. } = previous
-                    && matches!(base.nodes.as_slice(), [Node::Function { name }] if name == "log")
-                    && let Some(field) = sup.as_ref().or(sub.as_ref())
-                {
-                    return Some(Position {
-                        row: field.id,
-                        offset: field.nodes.len(),
-                    });
-                }
-            }
-            None
-        });
+        let target = fields::FieldScope::containing(self.row(parent), index, child)
+            .move_field(child, backward);
         self.accept_group(parent, index);
-        self.move_to(
-            next.unwrap_or(Position {
-                row: parent,
-                offset: index + usize::from(!backward),
-            }),
-            false,
-        );
+        self.move_to(target, false);
         if !backward {
             self.finish_root_call();
         }
@@ -107,18 +51,10 @@ impl Editor {
         }
         let child = self.state.cursor.row;
         if let Some((parent, index)) = self.state.root.parent(child) {
-            let log_argument = direction == Direction::Right
-                && self.logarithm_argument(parent, index, child).is_some();
+            let target = fields::FieldScope::containing(self.row(parent), index, child)
+                .outside(direction == Direction::Left);
             self.accept_group(parent, index);
-            self.move_to(
-                Position {
-                    row: parent,
-                    offset: index
-                        + usize::from(direction == Direction::Right)
-                        + usize::from(log_argument),
-                },
-                false,
-            );
+            self.move_to(target, false);
             if direction == Direction::Right {
                 self.finish_root_call();
             }
@@ -128,41 +64,25 @@ impl Editor {
 
     pub(super) fn log_input(&mut self, ch: char) -> Result<bool, Error> {
         let pending = self.pending_log.take();
-        if self.has_selection() {
+        if !matches!(ch, '_' | '(') || self.has_selection() {
             return Ok(false);
         }
         let cursor = self.state.cursor;
         let Some((parent, index)) = self.state.root.parent(cursor.row) else {
             return Ok(false);
         };
-        let nodes = &self.row(parent).nodes;
-        let Node::Script {
-            base,
-            sub: Some(sub),
-            sup,
-            ..
-        } = &nodes[index]
-        else {
+        let Some(log) = fields::Logarithm::starting_at(self.row(parent), index) else {
             return Ok(false);
         };
-        if sub.id != cursor.row
-            || cursor.offset != sub.nodes.len()
-            || !matches!(base.nodes.as_slice(), [Node::Function { name }] if name == "log")
-        {
+        let Some(sub) = log.base else {
+            return Ok(false);
+        };
+        if sub.id != cursor.row || cursor.offset != sub.nodes.len() {
             return Ok(false);
         }
-        let Some(Node::Group {
-            open: '(',
-            close: ')',
-            body,
-            ..
-        }) = nodes.get(index + 1)
-        else {
-            return Ok(false);
-        };
-        let argument = body.id;
+        let argument = log.argument.id;
         let empty = sub.nodes.is_empty();
-        let simple = sup.is_none();
+        let simple = log.exponent.is_none();
         if ch == '_' && empty {
             // Keep existing log_2 and log_(n+1) typing valid after automatic
             // expansion. The underscore marks an explicit base, not a nested one.

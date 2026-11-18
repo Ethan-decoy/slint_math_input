@@ -213,29 +213,30 @@ impl Node {
     pub fn symbol(text: impl Into<String>) -> Self {
         Self::Symbol { text: text.into() }
     }
-    pub fn children(&self) -> Vec<&Row> {
-        match self {
-            Self::Symbol { .. } | Self::Function { .. } | Self::Text { .. } => vec![],
+    pub fn children(&self) -> impl DoubleEndedIterator<Item = &Row> {
+        // Fixed structures have at most three child rows. Matrices can be
+        // traversed from either end directly in their existing row-major storage.
+        let mut grid: &[Vec<Row>] = &[];
+        let slots = match self {
+            Self::Symbol { .. } | Self::Function { .. } | Self::Text { .. } => [None; 3],
             Self::Fraction {
                 numerator,
                 denominator,
-            } => vec![numerator, denominator],
-            Self::Binomial { upper, lower } => vec![upper, lower],
-            Self::Accent { body, .. } | Self::Styled { body, .. } => vec![body],
-            Self::Stacked { base, over, under } => {
-                std::iter::once(base).chain(over).chain(under).collect()
+            } => [Some(numerator), Some(denominator), None],
+            Self::Binomial { upper, lower } => [Some(upper), Some(lower), None],
+            Self::Accent { body, .. } | Self::Styled { body, .. } | Self::Group { body, .. } => {
+                [Some(body), None, None]
             }
-            Self::Root { index, body } => index.iter().chain(std::iter::once(body)).collect(),
-            Self::Script {
-                placement: _,
-                base,
-                sub,
-                sup,
-            } => std::iter::once(base).chain(sub).chain(sup).collect(),
-            Self::Group { body, .. } => vec![body],
-            Self::Large { lower, upper, .. } => lower.iter().chain(upper).collect(),
-            Self::Matrix { cells, .. } => cells.iter().flatten().collect(),
-        }
+            Self::Stacked { base, over, under } => [Some(base), over.as_ref(), under.as_ref()],
+            Self::Root { index, body } => [index.as_ref(), Some(body), None],
+            Self::Script { base, sub, sup, .. } => [Some(base), sub.as_ref(), sup.as_ref()],
+            Self::Large { lower, upper, .. } => [lower.as_ref(), upper.as_ref(), None],
+            Self::Matrix { cells, .. } => {
+                grid = cells;
+                [None; 3]
+            }
+        };
+        slots.into_iter().flatten().chain(grid.iter().flatten())
     }
     pub fn children_mut(&mut self) -> Vec<&mut Row> {
         match self {
@@ -273,7 +274,7 @@ impl Node {
             Self::Large { lower, upper, .. } => lower.as_ref().or(upper.as_ref()),
             Self::Stacked { over, under, base } => over.as_ref().or(under.as_ref()).or(Some(base)),
             Self::Root { body, .. } | Self::Group { body, .. } => Some(body),
-            _ => self.children().first().copied(),
+            _ => self.children().next(),
         }
     }
     pub fn is_boundary(&self) -> bool {

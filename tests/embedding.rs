@@ -363,6 +363,37 @@ fn separate_host_instances_keep_focus_history_and_pointer_coordinates_independen
             assert_eq!(first.borrow().editor.latex().unwrap(), "x^{2}");
         }
     }
+    // A real Shift+Tab returns to the exponent, then Tab re-enters the argument.
+    use slint::platform::Key;
+    {
+        let mut state = second.borrow_mut();
+        state.editor.structured_typing = true;
+        state
+            .editor
+            .import_latex(r"\log^{2}\left(x\right)")
+            .unwrap();
+    }
+    ui.set_second_view(view(
+        second.borrow().view(ui.window().scale_factor()).unwrap(),
+    ));
+    ui.invoke_focus_second();
+    key(&ui, Key::LeftArrow);
+    ui.window().dispatch_event(WindowEvent::KeyPressed {
+        text: Key::Shift.into(),
+    });
+    key(&ui, Key::Tab);
+    ui.window().dispatch_event(WindowEvent::KeyReleased {
+        text: Key::Shift.into(),
+    });
+    key(&ui, "q");
+    key(&ui, Key::Tab);
+    key(&ui, "z");
+    assert_eq!(
+        second.borrow().editor.latex().unwrap(),
+        r"\log^{2q}\left(zx\right)"
+    );
+    assert_eq!(first.borrow().editor.latex().unwrap(), "x^{2}");
+
     let mut check = Editor::new();
     check
         .import_latex(&second.borrow().editor.latex().unwrap())

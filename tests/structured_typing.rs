@@ -37,6 +37,129 @@ fn logarithm_typing_and_catalog_share_base_and_argument_fields() {
 }
 
 #[test]
+fn a_powered_logarithm_returns_from_its_exponent_to_its_argument() {
+    let mut editor = editor();
+    editor.import_latex(r"\log^{2}\left(x\right)").unwrap();
+    editor.apply(Action::Move(Direction::Left, false)).unwrap();
+    editor.apply(Action::NextField(true)).unwrap();
+    let mut exponent = editor.clone();
+    typed(&mut exponent, "q");
+    assert_eq!(exponent.latex().unwrap(), r"\log^{2q}\left(x\right)");
+    editor.apply(Action::NextField(false)).unwrap();
+    typed(&mut editor, "q");
+    assert_eq!(editor.latex().unwrap(), r"\log^{2}\left(qx\right)");
+}
+
+#[test]
+fn a_square_group_after_a_logarithm_keeps_its_own_fields_and_delimiters() {
+    let mut editor = editor();
+    editor.import_latex(r"\log_{2}\left.x\right]").unwrap();
+    editor.apply(Action::Move(Direction::Left, false)).unwrap();
+    typed(&mut editor, "y");
+    assert_eq!(editor.latex_preview(), r"\log_{2}\left.xy\right]");
+    assert!(editor.latex().is_err());
+    editor.apply(Action::NextField(true)).unwrap();
+    typed(&mut editor, "q");
+    assert_eq!(editor.latex().unwrap(), r"\log_{2}q\left[xy\right]");
+}
+
+#[test]
+fn separate_groups_exit_at_their_own_left_edge() {
+    for (source, expected) in [
+        (r"\log_{2}\left[x\right]", r"\log_{2}q\left[x\right]"),
+        (r"\log_{2}+\left(x\right)", r"\log_{2}+q\left(x\right)"),
+        (r"\sin^{2}\left(x\right)", r"\sin^{2}q\left(x\right)"),
+        (
+            r"\log_{2}\left(x\right)\left(y\right)",
+            r"\log_{2}\left(x\right)q\left(y\right)",
+        ),
+    ] {
+        let mut document = editor();
+        document.import_latex(source).unwrap();
+        document
+            .apply(Action::Move(Direction::Left, false))
+            .unwrap();
+        document.apply(Action::NextField(true)).unwrap();
+        typed(&mut document, "q");
+        assert_eq!(document.latex().unwrap(), expected, "{source}");
+    }
+}
+
+#[test]
+fn explicitly_leaving_a_logarithm_stays_in_the_enclosing_numerator() {
+    for (exit, expected) in [
+        (
+            Action::Insert(" ".into()),
+            r"\frac{\log^{2}\left(x\right)q}{d}",
+        ),
+        (
+            Action::Escape(Direction::Left),
+            r"\frac{q\log^{2}\left(x\right)}{d}",
+        ),
+    ] {
+        let mut editor = editor();
+        editor
+            .import_latex(r"\frac{\log^{2}\left(x\right)}{d}")
+            .unwrap();
+        editor.apply(Action::RootHome(false)).unwrap();
+        editor.apply(Action::Move(Direction::Right, false)).unwrap();
+        editor.apply(Action::End(false)).unwrap();
+        editor.apply(Action::Move(Direction::Left, false)).unwrap();
+        if matches!(exit, Action::Insert(_)) {
+            editor.apply(Action::NextField(true)).unwrap();
+        }
+        editor.apply(exit).unwrap();
+        typed(&mut editor, "q");
+        assert_eq!(editor.latex().unwrap(), expected);
+    }
+}
+
+#[test]
+fn bidirectional_log_fields_agree_after_typing_catalog_import_and_restore() {
+    let source = r"\log_{b}^{2}\left(x\right)";
+    let mut keyboard = editor();
+    typed(&mut keyboard, "logb^2");
+    keyboard.apply(Action::NextField(false)).unwrap();
+    typed(&mut keyboard, "x");
+    let mut catalog = editor();
+    catalog.insert_catalog("log-base").unwrap();
+    typed(&mut catalog, "b");
+    catalog.apply(Action::Template(Template::Power)).unwrap();
+    typed(&mut catalog, "2");
+    catalog.apply(Action::NextField(false)).unwrap();
+    typed(&mut catalog, "x");
+    let mut imported = editor();
+    imported.import_latex(source).unwrap();
+    for (origin, mut document) in [
+        ("keyboard", keyboard),
+        ("catalog", catalog),
+        ("LaTeX", imported),
+    ] {
+        assert_eq!(document.latex().unwrap(), source, "{origin}");
+        document.apply(Action::RootEnd(false)).unwrap();
+        document
+            .apply(Action::Move(Direction::Left, false))
+            .unwrap();
+        document.apply(Action::NextField(true)).unwrap();
+        let mut restored = editor();
+        restored.restore_draft(&document.draft().unwrap()).unwrap();
+        for mut version in [document, restored] {
+            version.apply(Action::NextField(true)).unwrap();
+            typed(&mut version, "q");
+            version.apply(Action::NextField(false)).unwrap();
+            typed(&mut version, "r");
+            version.apply(Action::NextField(false)).unwrap();
+            typed(&mut version, "s");
+            assert_eq!(
+                version.latex().unwrap(),
+                r"\log_{bq}^{r2}\left(sx\right)",
+                "{origin}"
+            );
+        }
+    }
+}
+
+#[test]
 fn written_log_syntax_survives_automatic_expansion() {
     for (text, expected) in [
         ("log_2(x)", r"\log_{2}\left(x\right)"),

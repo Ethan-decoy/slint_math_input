@@ -6,6 +6,18 @@ All notable user-facing changes are recorded here, following
 
 ## [Unreleased]
 
+## [0.1.0-preview.6] - 2026-11-18
+
+### Fixed
+
+- Make field navigation reversible between a logarithm's base, exponent and
+  parenthesized argument, including `log²(x)`. In continuous typing mode an
+  explicit exit leaves the whole call. Adjacent square brackets keep their own
+  fields and delimiters.
+
+Hosts can upgrade with their existing Rust integration and version-1 drafts.
+Default typing keeps its existing key bindings.
+
 ## [0.1.0-preview.5] - 2026-11-10
 
 ### Added
@@ -94,7 +106,8 @@ The public Rust interfaces and version-1 draft format remain compatible.
 This is a GitHub source preview, not a crates.io publication. See the
 [support table](docs/support.md) for verified behavior and remaining native checks.
 
-[Unreleased]: https://github.com/Ethan-decoy/slint_math_input/compare/v0.1.0-preview.5...HEAD
+[Unreleased]: https://github.com/Ethan-decoy/slint_math_input/compare/v0.1.0-preview.6...HEAD
+[0.1.0-preview.6]: https://github.com/Ethan-decoy/slint_math_input/compare/v0.1.0-preview.5...v0.1.0-preview.6
 [0.1.0-preview.5]: https://github.com/Ethan-decoy/slint_math_input/compare/v0.1.0-preview.4...v0.1.0-preview.5
 [0.1.0-preview.4]: https://github.com/Ethan-decoy/slint_math_input/compare/v0.1.0-preview.2...v0.1.0-preview.4
 [0.1.0-preview.2]: https://github.com/Ethan-decoy/slint_math_input/compare/v0.1.0-preview.1...v0.1.0-preview.2

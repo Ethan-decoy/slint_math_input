@@ -202,6 +202,13 @@ The logarithm catalog entries use the same construct as typing.
 
 In this mode Tab/Shift+Tab visit editable fields, while Space exits the containing
 structure. `Action::NextField(bool)` exposes field navigation to custom toolbars.
+For a logarithm with scripts, Tab visits the base, exponent and adjacent
+parenthesized argument in that order, skipping absent fields. Shift+Tab follows
+the same fields in reverse. In `log²(x)` it moves from the argument back to the
+exponent. Square brackets form a separate group. Space or Escape from a field
+in the logarithm moves past the entire call, and Shift+Escape moves before it.
+For ordinary scripts the fields are subscript then superscript. For an indexed
+root they are degree then radicand.
 Directions retain geometric navigation, and operators remain in scripts until
 the user moves out. Explicit parentheses in `sqrt(3)/2` delimit the root's argument.
 Undo immediately after a shortcut expansion restores its literal command.

@@ -4,6 +4,7 @@ use crate::{
 };
 use serde::{Deserialize, Serialize};
 
+mod fields;
 mod structured_input;
 
 /// A stable row identifier and a boundary between its atoms.
@@ -705,7 +706,7 @@ impl Editor {
                     return Some(vec![position.offset * 2]);
                 }
                 for (node_index, node) in row.nodes.iter().enumerate() {
-                    for (child_index, child) in node.children().into_iter().enumerate() {
+                    for (child_index, child) in node.children().enumerate() {
                         if let Some(mut suffix) = order(child, position) {
                             let mut path = vec![node_index * 2 + 1, child_index];
                             path.append(&mut suffix);
@@ -1593,55 +1594,14 @@ impl Editor {
             "Place the cursor in a matrix or piecewise expression first",
         ))
     }
-    // Keep entry and boundary traversal in the same order for two-slot structures.
-    fn horizontal_slots(node: &Node) -> Option<(&Row, &Row)> {
-        match node {
-            Node::Fraction {
-                numerator: first,
-                denominator: second,
-            }
-            | Node::Binomial {
-                upper: first,
-                lower: second,
-            }
-            | Node::Root {
-                index: Some(first),
-                body: second,
-            }
-            | Node::Large {
-                lower: Some(first),
-                upper: Some(second),
-                ..
-            } => Some((first, second)),
-            _ => None,
-        }
-    }
-    // Keep logarithms as existing script/group nodes so drafts and LaTeX share
-    // the same structure. Advancing from either script enters its adjacent argument.
+    // Legacy arrow and escape navigation enter the argument of a based log
+    // directly from either script. Tab can visit the scripts individually.
     fn logarithm_argument(&self, parent: u64, index: usize, child: u64) -> Option<Position> {
-        let nodes = &self.row(parent).nodes;
-        if let Node::Script {
-            base,
-            sub: Some(sub),
-            sup,
-            ..
-        } = &nodes[index]
-            && (sub.id == child || sup.as_ref().is_some_and(|row| row.id == child))
-            && matches!(base.nodes.as_slice(), [Node::Function { name }] if name == "log")
-            && let Some(Node::Group {
-                open: '(',
-                close: ')',
-                body,
-                ..
-            }) = nodes.get(index + 1)
-        {
-            Some(Position {
-                row: body.id,
-                offset: 0,
-            })
-        } else {
-            None
-        }
+        let log = fields::Logarithm::starting_at(self.row(parent), index)?;
+        (log.base.is_some() && log.has_script(child)).then_some(Position {
+            row: log.argument.id,
+            offset: 0,
+        })
     }
     fn move_direction(&mut self, direction: Direction, extend: bool) {
         if matches!(direction, Direction::Up | Direction::Down) {
@@ -1765,20 +1725,20 @@ impl Editor {
         };
         if (right && cursor.offset < self.current().nodes.len()) || (!right && cursor.offset > 0) {
             let node = &self.current().nodes[index];
-            let entry = if let Some((first, second)) = Self::horizontal_slots(node) {
-                Some(if right { first } else { second })
-            } else if let Node::Matrix { cells, .. } = node {
+            let entry = if extend {
+                None
+            } else if let Some(mut fields) = fields::horizontal_fields(node) {
                 if right {
-                    cells.first().and_then(|r| r.first())
+                    fields.next()
                 } else {
-                    cells.last().and_then(|r| r.last())
+                    fields.next_back()
                 }
             } else if let Node::Script { base, .. } | Node::Stacked { base, .. } = node {
                 if right { Some(base) } else { node.entry() }
             } else {
                 node.entry()
             };
-            let target = if let Some(row) = entry.filter(|_| !extend) {
+            let target = if let Some(row) = entry {
                 Position {
                     row: row.id,
                     offset: if right { 0 } else { row.nodes.len() },
@@ -1800,34 +1760,11 @@ impl Editor {
                 row: parent,
                 offset: node_index + usize::from(right),
             };
-            if !extend && let Some((first, second)) = Self::horizontal_slots(node) {
-                if right && cursor.row == first.id {
-                    target = Position {
-                        row: second.id,
-                        offset: 0,
-                    };
-                } else if !right && cursor.row == second.id {
-                    target = Position {
-                        row: first.id,
-                        offset: first.nodes.len(),
-                    };
-                }
-            }
-            if !extend && let Node::Matrix { cells, .. } = node {
-                let cells: Vec<_> = cells.iter().flatten().collect();
-                if let Some(index) = cells.iter().position(|r| r.id == cursor.row) {
-                    let adjacent = if right {
-                        cells.get(index + 1)
-                    } else {
-                        index.checked_sub(1).and_then(|i| cells.get(i))
-                    };
-                    if let Some(row) = adjacent {
-                        target = Position {
-                            row: row.id,
-                            offset: if right { 0 } else { row.nodes.len() },
-                        };
-                    }
-                }
+            if !extend
+                && let Some(fields) = fields::horizontal_fields(node)
+                && let Some(adjacent) = fields::adjacent(fields, cursor.row, !right)
+            {
+                target = adjacent;
             }
             if !extend
                 && let Node::Script {
@@ -1923,12 +1860,11 @@ impl Editor {
                 return;
             }
             let node = &self.current().nodes[index];
-            let children = node.children();
             if let Some(row) = if forward {
-                children.first()
+                node.children().next()
             } else {
-                children.last()
-            } && !node.children().iter().all(|r| r.nodes.is_empty())
+                node.children().next_back()
+            } && node.children().any(|child| !child.nodes.is_empty())
             {
                 self.state.cursor = Position {
                     row: row.id,

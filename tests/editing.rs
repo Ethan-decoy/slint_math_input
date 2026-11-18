@@ -262,34 +262,47 @@ fn operation_replay_preserves_invariants_and_serialization() {
         Action::Insert("\u{0}".into()),
         Action::Clear,
     ];
-    for (seed, source) in [
+    let seeds = [
         (741_u64, ""),
         (19, r"\log_{b}^{2}\left(\frac{x}{y}\right)"),
         (836, r"\begin{bmatrix}1&2\\3&4\end{bmatrix}"),
         (2026, r"\sqrt[3]{x^{2}+1}"),
-    ] {
-        let mut editor = Editor::new();
-        editor.import_latex(source).unwrap();
-        let mut random = seed;
-        for step in 0..1500 {
-            random = random.wrapping_mul(6364136223846793005).wrapping_add(1);
-            let operation = operations[(random >> 32) as usize % operations.len()].clone();
-            let before = editor.draft().unwrap();
-            let history = (editor.can_undo(), editor.can_redo());
-            if editor.apply(operation.clone()).is_err() {
-                assert_eq!(
-                    editor.draft().unwrap(),
-                    before,
-                    "seed {seed}, step {step}, {operation:?}"
-                );
-                assert_eq!((editor.can_undo(), editor.can_redo()), history);
-            }
-            editor
-                .validate()
-                .unwrap_or_else(|e| panic!("seed {seed}, step {step}, {operation:?}: {e}"));
-            if step % 25 == 0 {
-                let draft = editor.draft().unwrap();
-                assert_eq!(Editor::from_draft(&draft).unwrap().draft().unwrap(), draft);
+    ];
+    for continuous in [false, true] {
+        let mut actions = operations.to_vec();
+        if continuous {
+            actions.extend([
+                Action::NextField(false),
+                Action::NextField(true),
+                Action::Insert("log".into()),
+                Action::Insert(" ".into()),
+            ]);
+        }
+        for (seed, source) in seeds {
+            let mut editor = Editor::new();
+            editor.structured_typing = continuous;
+            editor.import_latex(source).unwrap();
+            let mut random = seed;
+            for step in 0..1500 {
+                random = random.wrapping_mul(6364136223846793005).wrapping_add(1);
+                let operation = actions[(random >> 32) as usize % actions.len()].clone();
+                let before = editor.draft().unwrap();
+                let history = (editor.can_undo(), editor.can_redo());
+                if editor.apply(operation.clone()).is_err() {
+                    assert_eq!(
+                        editor.draft().unwrap(),
+                        before,
+                        "continuous={continuous}, seed {seed}, step {step}, {operation:?}"
+                    );
+                    assert_eq!((editor.can_undo(), editor.can_redo()), history);
+                }
+                editor.validate().unwrap_or_else(|e| {
+                    panic!("continuous={continuous}, seed {seed}, step {step}, {operation:?}: {e}")
+                });
+                if step % 25 == 0 {
+                    let draft = editor.draft().unwrap();
+                    assert_eq!(Editor::from_draft(&draft).unwrap().draft().unwrap(), draft);
+                }
             }
         }
     }
